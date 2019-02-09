@@ -1,1 +1,3 @@
 IBIS-Mac*
+node_modules/*
+.vscode/*

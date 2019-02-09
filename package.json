@@ -1,0 +1,22 @@
+{
+  "name": "ibis",
+  "version": "1.0.0",
+  "description": "Web version of IBIS (MedicineWorks)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjspriggs/ibis.git"
+  },
+  "author": "ben@sprico.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/benjspriggs/ibis/issues"
+  },
+  "homepage": "https://github.com/benjspriggs/ibis#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
