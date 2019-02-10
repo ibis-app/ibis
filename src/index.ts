@@ -26,10 +26,9 @@ app.get("/", (_, res: express.Response) => {
     })
 })
 
-app.use('/assets', assets)
-
 app.use(cors())
 
+app.use('/assets', assets)
 app.use('/api', api)
 
 if (process.env["NODE_ENV"] === 'production') {
