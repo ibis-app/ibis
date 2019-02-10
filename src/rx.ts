@@ -4,7 +4,6 @@ import path from 'path'
 import fs from 'fs'
 import { isEmpty } from 'lodash'
 import { getModality, parseHeader, parseHeaderFromFile } from './common'
-import { filter } from 'minimatch';
 
 const router = express.Router()
 
