@@ -110,8 +110,8 @@ export async function parseHeader(source: Buffer): Promise<string[]> {
 
     const first = interestingNodes.findIndex(node => versionPattern.test(node))
 
-    console.log(first)
-    console.dir(interestingNodes)
+    // console.log(first)
+    // console.dir(interestingNodes)
 
     return interestingNodes.slice(first, first + 5)
 }
