@@ -5,10 +5,11 @@
   "scripts": {
     "start": "npm run serve",
     "serve": "node dist/index.js",
-    "watch-node": "nodemon dist/server.js",
+    "watch:node": "nodemon dist/index.js",
     "build": "tsc",
-    "watch": "tsc -w",
+    "watch:ts": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "watch": "concurrently \"npm run watch:ts\" \"npm run watch:node\"",
     "copy-static-assets": "ts-node copyStaticAssets.ts"
   },
   "repository": {
@@ -27,11 +28,13 @@
     "@types/shelljs": "^0.8.2",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "node-html-parser": "^1.1.12",
     "shelljs": "^0.8.3",
     "ts-node": "^8.0.2",
     "typescript": "^3.3.3"
   },
   "devDependencies": {
+    "concurrently": "^4.1.0",
     "nodemon": "^1.18.10",
     "tslint": "^5.12.1"
   }
