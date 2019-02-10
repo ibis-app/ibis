@@ -2,3 +2,4 @@ IBIS-Mac*
 node_modules/*
 .vscode/*
 dist/*
+semantic/*
