@@ -2,7 +2,8 @@ import express from 'express'
 import config from './config'
 import path from 'path'
 import fs from 'fs'
-import { getModality, modalities } from './common'
+import { getModality, parseHeader } from './common'
+import { filter } from 'minimatch';
 
 const router = express.Router()
 
@@ -15,6 +16,24 @@ router.get('/:modality/:treatment', (req: express.Request, res: express.Response
     } = req.params;
 
     res.sendFile(path.join(rxPath, modality, treatment))
+});
+
+
+router.get('/:modality/:treatment/info', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const {
+        modality,
+        treatment
+    } = req.params;
+
+    fs.readFile(path.join(rxPath, modality, treatment), async (err, data) => {
+        if (err) {
+            next(err)
+        }
+
+        const interestingNodes = await parseHeader(data)
+
+        res.send(interestingNodes.toString())
+    })
 });
 
 const getListing: express.RequestHandler = (req, res, next) => {
