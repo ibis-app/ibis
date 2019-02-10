@@ -1,12 +1,14 @@
 import path from 'path'
 
-const root: string = path.join(__dirname, '..', '..', 'IBIS-Mac OS X')
-const system: string = path.join(root, 'system')
-const user: string = path.join(root, 'system')
+const applicationRoot: string = path.join(__dirname, '..', '..')
+const ibisRoot: string = path.join(applicationRoot, 'IBIS-Mac OS X')
+const system: string = path.join(ibisRoot, 'system')
+const user: string = path.join(ibisRoot, 'system')
 
 interface Config {
     paths: {
-        root: string,
+        applicationRoot: string,
+        ibisRoot: string,
         system: string,
         user: string,
         rx: string,
@@ -16,7 +18,8 @@ interface Config {
 
 var config: Config = {
     paths: {
-        root: root,
+        applicationRoot: applicationRoot,
+        ibisRoot: ibisRoot,
         system: system,
         user: user,
         rx: path.join(system, 'rx'),

@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import path from 'path'
 import api from './api'
+import assets from './assets'
 import express_handlebars from 'express-handlebars'
 
 const port = parseInt(process.env['PORT']) || 3000
@@ -25,13 +26,7 @@ app.get("/", (_, res: express.Response) => {
     })
 })
 
-app.get("/semantic.min.js", (_, res: express.Response) => {
-    res.sendFile(path.join(__dirname, '..', 'semantic', 'dist', 'semantic.min.js'))
-})
-
-app.get("/semantic.min.css", (_, res: express.Response) => {
-    res.sendFile(path.join(__dirname, '..', 'semantic', 'dist', 'semantic.min.css'))
-})
+app.use('/assets', assets)
 
 app.use(cors())
 

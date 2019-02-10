@@ -2,13 +2,31 @@
 <html lang="en">
 
 <!-- sourced: https://fomantic-ui.com/examples/fixed.html -->
+
 <head>
     <meta charset="UTF-8">
     <title>IBIS</title>
-    <link rel="stylesheet" type="text/css" href="semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/semantic/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <script src="semantic.min.js"></script>
+    <script src="assets/semantic/semantic.min.js"></script>
+    <style type="text/css">
+  .ui.menu .item img.logo {
+    margin-right: 1.5em;
+  }
+  .main.container {
+    margin-top: 7em;
+  }
+  .wireframe {
+    margin-top: 2em;
+  }
+  .ui.footer.segment {
+    margin: 5em 0em 0em;
+    padding: 5em 0em;
+  }
+  
+
+    </style>
 </head>
 
 <body>
@@ -16,7 +34,9 @@
         {{> menu}}
     </div>
     <div class="ui main text container">
-        <h1>Title</h1>
+        <h1 class="ui header">Title</h1>
+
+        <p>These are words in main</p>
         {{body}}
     </div>
     <div class="ui inverted vertical footer segment">
