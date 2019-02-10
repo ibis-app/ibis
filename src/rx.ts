@@ -2,7 +2,8 @@ import express from 'express'
 import config from './config'
 import path from 'path'
 import fs from 'fs'
-import { getModality, parseHeader } from './common'
+import { isEmpty } from 'lodash'
+import { getModality, parseHeader, parseHeaderFromFile } from './common'
 import { filter } from 'minimatch';
 
 const router = express.Router()
@@ -30,9 +31,26 @@ router.get('/:modality/:treatment/info', (req: express.Request, res: express.Res
             next(err)
         }
 
-        const interestingNodes = await parseHeader(data)
+        const interestingNode = await parseHeader(data)
 
-        res.send(interestingNodes.toString())
+        console.dir(interestingNode)
+
+        const [
+            version,
+            _,
+            tag,
+            name,
+            category
+        ] = interestingNode;
+
+        res.send({
+            modality: modality,
+            treatment: treatment,
+            version: version,
+            tag: tag,
+            name: name,
+            category: category
+        })
     })
 });
 
@@ -59,18 +77,27 @@ const getListing: express.RequestHandler = (req, res, next) => {
     })
 }
 
-router.get('/:modality', getListing, (req: express.Request, res: express.Response) => {
+router.get('/:modality', getListing, async (req: express.Request, res: express.Response) => {
     const {
         modality
     } = req.params
+
+    const meta = await Promise.all(res.locals.listing
+        .map(async (filename: string) => ({ 
+            filename: filename,
+            info: await parseHeaderFromFile(path.join(rxPath, modality, filename)),
+        })))
+
+    const empty = meta.filter((infoObject: any) => isEmpty(infoObject.info) || Object.values(infoObject.info).some(val => typeof val === 'undefined'))
 
     res.send({
         modality: {
             code: modality,
             ...getModality(modality)
         },
-        filenames: res.locals.listing
-        })
+        meta: meta,
+        empty: empty
+    })
 })
 
 export default router

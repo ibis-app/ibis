@@ -1,6 +1,8 @@
-import { parse, HTMLElement, TextNode } from 'node-html-parser'
+import _ from 'lodash'
+import fs from 'fs'
+import { parse, HTMLElement, TextNode, Node } from 'node-html-parser'
 
-export const modalities: { [code: string]: { displayName: string }} = {
+export const modalities: { [code: string]: { displayName: string } } = {
     'acup': {
         displayName: "Acupuncture"
     },
@@ -41,16 +43,75 @@ export const getModality = (codeOrDisplayName: string) => {
     }
 }
 
-export const parseHeader = async (source: Buffer) => {
+const possibleNodes: (node: Node) => string[] = (node: Node) => {
+    if (!node) {
+        return []
+    }
+
+    return _.flatten(node.childNodes
+        .map(node => {
+            if (node instanceof TextNode) {
+                return [node.rawText.trim()]
+            } else if (node instanceof HTMLElement) {
+                if (node.childNodes[0] instanceof TextNode) {
+                    return node.childNodes.slice(0, 10).map(n => n.rawText.trim())
+                }
+            }
+            return []
+        }))
+        .filter(nodeText => nodeText !== '')
+}
+
+export function parseHeaderFromFile(filepath: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filepath, async (err, data) => {
+            if (err) {
+                reject(err)
+            }
+
+            const interestingNode = await parseHeader(data)
+
+            const [
+                version,
+                _,
+                tag,
+                name,
+                category
+            ] = interestingNode;
+
+            resolve({
+                version: version,
+                tag: tag,
+                name: name,
+                category: category
+            })
+        })
+    })
+}
+
+const versionPattern = /^-IBIS-(\d+)\.(\d+)\.(\d+)-$/
+
+// TODO: this doesn't reliably parse the headers for most files
+// @bspriggs investigate
+export async function parseHeader(source: Buffer): Promise<string[]> {
     const root = parse(source.toString(), { noFix: false, lowerCaseTagName: true })
 
-    const interestingNodes = (root.childNodes
+    const htmlRoot = (root.childNodes
         .find(node => node instanceof HTMLElement) as HTMLElement)
-        .querySelector("head")
-        .childNodes
-            .filter(node => node instanceof TextNode)
-            .map(node => node.rawText.trim())
-            .filter(nodeText => nodeText !== '')
 
-    return interestingNodes;
+    if (!htmlRoot) {
+        return []
+    }
+
+    const interestingNodes: string[] = [].concat(
+        possibleNodes(htmlRoot),
+        possibleNodes(htmlRoot.querySelector("head")),
+        possibleNodes(htmlRoot.querySelector("body")))
+
+    const first = interestingNodes.findIndex(node => versionPattern.test(node))
+
+    console.log(first)
+    console.dir(interestingNodes)
+
+    return interestingNodes.slice(first, first + 5)
 }
