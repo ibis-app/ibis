@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import rx from './rx'
+import api from './api'
 
 const port = 3000
 const hostname = 'localhost'
@@ -13,7 +13,7 @@ app.get("/", (_, res: express.Response) => {
 
 app.use(cors())
 
-app.use('/rx', rx)
+app.use('/api', api)
 
 app.listen(port, hostname, () => {
     console.log(`Listening on http://${hostname}:${port}`)

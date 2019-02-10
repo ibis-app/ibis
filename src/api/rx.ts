@@ -3,7 +3,7 @@ import config from './config'
 import path from 'path'
 import fs from 'fs'
 import { isEmpty } from 'lodash'
-import { getModality, parseHeader, parseHeaderFromFile } from './common'
+import { getModality, parseHeader, parseHeaderFromFile } from '../common'
 
 const router = express.Router()
 
