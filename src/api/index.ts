@@ -3,6 +3,10 @@ import rx from './rx'
 
 var router = express.Router()
 
-router.get('/rx', rx)
+router.get('/', (_, res: express.Response) => {
+    res.send('API')
+})
+
+router.use('/rx', rx)
 
 export default router

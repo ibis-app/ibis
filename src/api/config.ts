@@ -1,6 +1,6 @@
 import path from 'path'
 
-const root: string = path.join(__dirname, '..', 'IBIS-Mac OS X')
+const root: string = path.join(__dirname, '..', '..', 'IBIS-Mac OS X')
 const system: string = path.join(root, 'system')
 const user: string = path.join(root, 'system')
 

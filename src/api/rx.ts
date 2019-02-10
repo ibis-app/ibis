@@ -9,6 +9,10 @@ const router = express.Router()
 
 const rxPath = config.paths.rx
 
+router.get('/', (_, res: express.Response) => {
+    res.send('rx')
+})
+
 router.get('/:modality/:treatment', (req: express.Request, res: express.Response) => {
     const {
         modality,
