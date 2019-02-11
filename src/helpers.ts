@@ -55,8 +55,8 @@ exhbs.registerAsyncHelper('menu', (context: any, cb: Function) => {
     });
 })
 
-exhbs.registerAsyncHelper('readFile', readFile(config.paths.applicationRoot))
-exhbs.registerAsyncHelper('readIFile', readFile(config.paths.ibisRoot))
+exhbs.registerAsyncHelper('file', readFile(config.paths.applicationRoot))
+exhbs.registerAsyncHelper('ibis_file', readFile(config.paths.ibisRoot))
 
 exhbs.registerAsyncHelper('api', (context: any, cb: Function) => {
     console.log('fetching from helper')
