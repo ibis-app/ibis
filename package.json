@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Web version of IBIS (MedicineWorks)",
   "scripts": {
-    "start": "npm run serve",
-    "serve": "node dist/index.js",
-    "watch:node": "nodemon dist/index.js",
+    "start": "concurrently --kill-others \"npm:serve:api\" \"npm:serve:app\"",
+    "serve:api": "node dist/api/index.js",
+    "serve:app": "node dist/index.js",
+    "watch:node": "concurrently \"nodemon dist/index.js\" \"nodemon dist/api/index.js\"",
     "build": "tsc",
     "watch:ts": "tsc -w",
     "watch:copy": "cpx \"src/**/*.hbs\" dist --watch",
@@ -47,5 +48,8 @@
     "cpx": "^1.5.0",
     "nodemon": "^1.18.10",
     "tslint": "^5.12.1"
+  },
+  "nodemonConfig": {
+    "delay": 1000
   }
 }

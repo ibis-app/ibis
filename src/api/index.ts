@@ -1,12 +1,6 @@
-import express from 'express'
-import rx from './rx'
+import app from './app'
+import { port, hostname, apiHostname } from './config'
 
-var router = express.Router()
-
-router.get('/', (_, res: express.Response) => {
-    res.send('API')
+app.listen(port, hostname, () => {
+    console.log(`Listening on ${apiHostname}`)
 })
-
-router.use('/rx', rx)
-
-export default router

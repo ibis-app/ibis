@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import config from './api/config'
 import { menuItems } from './views'
-import { appHostname } from './config'
+import { apiHostname } from './api/config'
 import axios from 'axios'
 
 const readFile = (root: string) => (filename: string, cb: Function) => {
@@ -18,7 +18,7 @@ const readFile = (root: string) => (filename: string, cb: Function) => {
 }
 
 export const fetchFromAPI = (endpoint: string, cb: (data?: any)=>any) => {
-    const absolutePath = `${appHostname}/api/${endpoint}`
+    const absolutePath = `${apiHostname}/${endpoint}`
     axios.get(absolutePath)
         .then((response) => {
             cb(response.data)
@@ -59,5 +59,6 @@ exhbs.registerAsyncHelper('readFile', readFile(config.paths.applicationRoot))
 exhbs.registerAsyncHelper('readIFile', readFile(config.paths.ibisRoot))
 
 exhbs.registerAsyncHelper('api', (context: any, cb: Function) => {
+    console.log('fetching from helper')
     fetchFromAPI(context.hash.endpoint, (data) => cb(new exhbs.SafeString(data)))
 })

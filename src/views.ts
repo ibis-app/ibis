@@ -1,5 +1,5 @@
 import express from 'express'
-import axios from 'axios'
+import path from 'path'
 import { fetchFromAPI } from './helpers'
 
 export const menuItems: {
@@ -50,13 +50,18 @@ router.get("/:route", (req: express.Request, res: express.Response) => {
 
     const item = getMenuItemBy.destination(route)
 
-    if (item.endpoint) {
-        fetchFromAPI(item.endpoint, (data) => {
-            res.render(route, ({ ...item, data: data }))
-        })
+    if (item) {
+        if (item.endpoint) {
+            fetchFromAPI(item.endpoint, (data) => {
+                res.render(route, ({ ...item, data: data }))
+            })
+        } else {
+            res.render(route, item)
+        }
     } else {
-        res.render(route, item)
+        res.sendFile(path.join(__dirname, 'public'))
     }
+
 })
 
 export default router
