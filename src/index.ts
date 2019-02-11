@@ -1,30 +1,27 @@
 import express from 'express'
 import cors from 'cors'
 import path from 'path'
+import exhbs from 'express-hbs'
+import { port, hostname } from './config'
 import api from './api'
 import assets from './assets'
-import express_handlebars from 'express-handlebars'
-
-const port = parseInt(process.env['PORT']) || 3000
-const hostname = process.env['localhost'] || 'localhost'
+import views from './views'
+import './helpers'
 
 let app = express()
 
-app.engine('.hbs', express_handlebars({
-    'defaultLayout': 'main',
-    'extname': 'hbs',
+app.engine('.hbs', exhbs.express4({
+    'defaultLayout': path.join(__dirname, 'views', 'layouts', 'default'),
+    'extname': '.hbs',
     'layoutsDir': 'dist/views/layouts',
     'partialsDir': 'dist/views/partials'
 }))
+
 app.set('views', 'dist/views')
 
 app.set('view engine', '.hbs')
 
-app.get("/", (_, res: express.Response) => {
-    res.render('index', {
-        title: 'asdf'
-    })
-})
+app.use('/', views)
 
 app.use(cors())
 

@@ -5,11 +5,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>IBIS</title>
+    <title>IBIS - {{{title}}}</title>
     <link rel="stylesheet" type="text/css" href="assets/semantic/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <script src="assets/semantic/semantic.min.js"></script>
+    <script async defer src="assets/semantic/semantic.min.js"></script>
+    {{{block "pageStyles"}}}
     <style type="text/css">
   .ui.menu .item img.logo {
     margin-right: 1.5em;
@@ -24,17 +25,15 @@
     margin: 5em 0em 0em;
     padding: 5em 0em;
   }
-  
-
     </style>
 </head>
 
 <body>
     <div class="ui fixed inverted menu">
-        {{> menu}}
+        {{{menu}}}
     </div>
     <div class="ui main text container">
-        <h1 class="ui header">Title</h1>
+        <h1 class="ui header">{{title}}</h1>
 
         <p>These are words in main</p>
         {{body}}
@@ -44,4 +43,5 @@
     </div>
 </body>
 
+{{{block "scripts"}}}
 </html>
