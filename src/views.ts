@@ -52,16 +52,16 @@ router.get("/:route", (req: express.Request, res: express.Response, next: expres
 
     const item = getMenuItemBy.destination(route)
 
-    if (item) {
-        if (item.endpoint) {
-            fetchFromAPI(item.endpoint, (data) => {
-                res.render(route, ({ ...item, data: data }))
-            })
-        } else {
-            res.render(route, item)
-        }
-    } else {
+    if (typeof item === 'undefined') {
         next(new Error(`no such route found: ${route}`))
+    }
+
+    if (item.endpoint) {
+        fetchFromAPI(item.endpoint, (data) => {
+            res.render(route, ({ ...item, data: data }))
+        })
+    } else {
+        res.render(route, item)
     }
 })
 
