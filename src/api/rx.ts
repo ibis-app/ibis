@@ -22,14 +22,22 @@ router.get('/file/:modality/:treatment', (req: express.Request, res: express.Res
     res.sendFile(path.join(rxPath, modality, treatment))
 });
 
+const filepath = (req: express.Request, modality: string, filename: string) => {
+    const relative = `rx/file/${modality}/${filename}`
 
-router.get('/file/:modality/:treatment/info', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    return {
+        relative: relative,
+        absolute: `${req.protocol}://${req.headers.host}/${relative}`
+    }
+}
+
+router.get('/file/:modality/:filename/info', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const {
         modality,
-        treatment
+        filename
     } = req.params;
 
-    fs.readFile(path.join(rxPath, modality, treatment), async (err, data) => {
+    fs.readFile(path.join(rxPath, modality, filename), async (err, data) => {
         if (err) {
             next(err)
         }
@@ -48,7 +56,8 @@ router.get('/file/:modality/:treatment/info', (req: express.Request, res: expres
 
         res.send({
             modality: modality,
-            treatment: treatment,
+            filename: filename,
+            filepath: filepath(req, modality, filename),
             version: version,
             tag: tag,
             name: name,
@@ -88,6 +97,7 @@ router.get('/file/:modality', getListing, async (req: express.Request, res: expr
     const meta = await Promise.all(res.locals.listing
         .map(async (filename: string) => ({ 
             filename: filename,
+            filepath: filepath(req, modality, filename),
             info: await parseHeaderFromFile(path.join(rxPath, modality, filename)),
         })))
 

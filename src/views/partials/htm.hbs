@@ -1,4 +1,18 @@
 <div class="container text">
-    <h3><a href="{{hostname 'api'}}/rx/file/acup/{{filename}}">{{title_case info.name}}</a></h3>
-    {{{json this}}}
+    <h2 class="ui header">
+        <a href="{{hostname 'api'}}/rx/file/acup/{{filename}}">{{title_case info.name}}</a>
+
+        {{#with info}}
+        <div class="ui label">{{version}}</div>
+        <div class="sub header">
+            <div class="ui breadcrumb">
+                <div class="section">{{category}}</div>
+                <div class="divider">-</div>
+                <div class="section">{{tag}}</div>
+                <div class="divider">-</div>
+                <div class="active section">{{name}}</div>
+            </div>
+        {{/with}}
+    </h2>
+    {{{ibis_file this}}}
 </div>

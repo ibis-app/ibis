@@ -55,8 +55,11 @@ exhbs.registerAsyncHelper('menu', (context: any, cb: Function) => {
     });
 })
 
-exhbs.registerAsyncHelper('file', readFile(config.paths.applicationRoot))
-exhbs.registerAsyncHelper('ibis_file', readFile(config.paths.ibisRoot))
+exhbs.registerAsyncHelper('ibis_file', (info: any, cb: Function) => {
+    fetchFromAPI(info.filepath.relative, (data) => {
+        cb(data)
+    })
+})
 
 exhbs.registerAsyncHelper('api', (context: any, cb: Function) => {
     console.log('fetching from helper')
@@ -82,4 +85,8 @@ exhbs.registerHelper('title_case', (s: string) => {
         .split(whitespace)
         .map(segment => segment.charAt(0).toLocaleUpperCase() + segment.slice(1))
         .join(' ')
+})
+
+exhbs.registerHelper('with', (context: any, options: any) => {
+    return options.fn(context)
 })
