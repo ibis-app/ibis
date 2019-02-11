@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import fs from 'fs'
 import { parse, HTMLElement, TextNode, Node } from 'node-html-parser'
+import { RequestHandler, Request, NextFunction } from 'express'
 
 export const modalities: { [code: string]: { displayName: string } } = {
     'acup': {
@@ -114,4 +115,15 @@ export async function parseHeader(source: Buffer): Promise<string[]> {
     // console.dir(interestingNodes)
 
     return interestingNodes.slice(first, first + 5)
+}
+
+export const requestLogger: RequestHandler = (req: Request, _, next: NextFunction) => {
+    console.log(JSON.stringify(
+        {
+            date: new Date(),
+            path: req.path,
+            query: req.query,
+            'user-agent': req.headers['user-agent'],
+        }))
+    next()
 }

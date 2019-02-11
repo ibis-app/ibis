@@ -1,7 +1,5 @@
 <ul>
     {{#each data.meta}}
-    <li>
-        <a href="{{hostname 'api'}}/rx/acup/{{filename}}">{{filename}}</a>
-    </li>
+    {{> htm}}
     {{/each}}
 </ul>
