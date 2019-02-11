@@ -22,14 +22,14 @@ router.get('/file/:modality/:treatment', (req: express.Request, res: express.Res
     res.sendFile(path.join(rxPath, modality, treatment))
 });
 
-const filepath = (req: express.Request, modality: string, filename: string) => {
-    const relative = `rx/file/${modality}/${filename}`
-
+function resolved(req: express.Request, endpoint: string): ({ relative: string, absolute: string }) {
     return {
-        relative: relative,
-        absolute: `${req.protocol}://${req.headers.host}/${relative}`
-    }
+        relative: endpoint,
+        absolute: `${req.protocol}://${req.headers.host}/${endpoint}`
+    };
 }
+
+const filepath = (req: express.Request, modality: string, filename: string) => resolved(req, `rx/file/${modality}/${filename}`)
 
 router.get('/file/:modality/:filename/info', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const {
@@ -43,8 +43,6 @@ router.get('/file/:modality/:filename/info', (req: express.Request, res: express
         }
 
         const interestingNode = await parseHeader(data)
-
-        console.dir(interestingNode)
 
         const [
             version,
