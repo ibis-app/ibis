@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import config from './api/config'
 import { menuItems } from './views'
-import { port, hostname } from './config'
+import { appHostname } from './config'
 import axios from 'axios'
 
 const readFile = (root: string) => (filename: string, cb: Function) => {
@@ -18,7 +18,7 @@ const readFile = (root: string) => (filename: string, cb: Function) => {
 }
 
 export const fetchFromAPI = (endpoint: string, cb: (data?: any)=>any) => {
-    const absolutePath = `http://${hostname}:${port}/api/${endpoint}`
+    const absolutePath = `${appHostname}/api/${endpoint}`
     axios.get(absolutePath)
         .then((response) => {
             cb(response.data)
