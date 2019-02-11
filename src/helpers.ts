@@ -62,3 +62,9 @@ exhbs.registerAsyncHelper('api', (context: any, cb: Function) => {
     console.log('fetching from helper')
     fetchFromAPI(context.hash.endpoint, (data) => cb(new exhbs.SafeString(data)))
 })
+
+exhbs.registerHelper('hostname', (route: any) => {
+    if (route === 'api') {
+        return apiHostname;
+    }
+})

@@ -43,6 +43,8 @@ router.get("/", (_, res: express.Response) => {
     res.render('home', getMenuItemBy.destination(''))
 })
 
+router.use('/:asset', express.static(path.join(__dirname, 'public')))
+
 router.get("/:route", (req: express.Request, res: express.Response) => {
     const {
         route
@@ -59,7 +61,7 @@ router.get("/:route", (req: express.Request, res: express.Response) => {
             res.render(route, item)
         }
     } else {
-        res.sendFile(path.join(__dirname, 'public'))
+        console.log('error on route', route)
     }
 
 })
