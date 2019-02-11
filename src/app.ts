@@ -4,22 +4,14 @@ import path from 'path'
 import exhbs from 'express-hbs'
 import assets from './assets'
 import views from './views'
+import { requestLogger } from './common'
 import './helpers'
 
 let app = express()
 
 app.use(cors())
 
-app.use((req: express.Request, res, next) => {
-    console.log(JSON.stringify(
-        {
-            date: new Date(),
-            path: req.path,
-            query: req.query,
-            'user-agent': req.headers['user-agent'],
-        }))
-    next()
-})
+app.use(requestLogger)
 
 app.engine('.hbs', exhbs.express4({
     'defaultLayout': path.join(__dirname, 'views', 'layouts', 'default'),

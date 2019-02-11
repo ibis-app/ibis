@@ -15,7 +15,7 @@ export const menuItems: {
         {
             destination: 'therapeutics',
             title: 'Therapeutics',
-            endpoint: 'rx/ACUP'
+            endpoint: 'rx/file/ACUP'
         },
         {
             destination: 'materia-medica',

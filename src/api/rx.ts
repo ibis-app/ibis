@@ -13,7 +13,7 @@ router.get('/', (_, res: express.Response) => {
     res.send('rx')
 })
 
-router.get('/:modality/:treatment', (req: express.Request, res: express.Response) => {
+router.get('/file/:modality/:treatment', (req: express.Request, res: express.Response) => {
     const {
         modality,
         treatment
@@ -23,7 +23,7 @@ router.get('/:modality/:treatment', (req: express.Request, res: express.Response
 });
 
 
-router.get('/:modality/:treatment/info', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get('/file/:modality/:treatment/info', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const {
         modality,
         treatment
@@ -80,7 +80,7 @@ const getListing: express.RequestHandler = (req, res, next) => {
     })
 }
 
-router.get('/:modality', getListing, async (req: express.Request, res: express.Response) => {
+router.get('/file/:modality', getListing, async (req: express.Request, res: express.Response) => {
     const {
         modality
     } = req.params

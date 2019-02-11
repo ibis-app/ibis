@@ -68,3 +68,18 @@ exhbs.registerHelper('hostname', (route: any) => {
         return apiHostname;
     }
 })
+
+exhbs.registerHelper('json', (data: any) => {
+    return JSON.stringify(data)
+})
+
+const whitespace = /\s+/
+
+exhbs.registerHelper('title_case', (s: string) => {
+    if (typeof s !== 'string') return s;
+
+    return s
+        .split(whitespace)
+        .map(segment => segment.charAt(0).toLocaleUpperCase() + segment.slice(1))
+        .join(' ')
+})
