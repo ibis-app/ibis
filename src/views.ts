@@ -45,7 +45,7 @@ router.get("/", (_, res: express.Response) => {
 
 router.use('/:asset', express.static(path.join(__dirname, 'public')))
 
-router.get("/:route", (req: express.Request, res: express.Response) => {
+router.get("/:route", (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const {
         route
     } = req.params
@@ -61,9 +61,8 @@ router.get("/:route", (req: express.Request, res: express.Response) => {
             res.render(route, item)
         }
     } else {
-        console.log('error on route', route)
+        next(new Error(`no such route found: ${route}`))
     }
-
 })
 
 export default router
