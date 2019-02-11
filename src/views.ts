@@ -1,11 +1,62 @@
 import express from 'express'
+import axios from 'axios'
+import { fetchFromAPI } from './helpers'
+
+export const menuItems: {
+    destination: string,
+    title: string,
+    external?: boolean,
+    endpoint?: string
+}[] = [
+        {
+            destination: '',
+            title: 'Home'
+        },
+        {
+            destination: 'therapeutics',
+            title: 'Therapeutics',
+            endpoint: 'rx/ACUP'
+        },
+        {
+            destination: 'materia-medica',
+            title: 'Materia Medica'
+        },
+        {
+            destination: 'contact',
+            title: 'Contact'
+        },
+        {
+            destination: 'https://github.com/benjspriggs/ibis',
+            title: 'Source',
+            external: true
+        },
+    ]
+
+export const getMenuItemBy = {
+    destination: (destination: string) => menuItems.find(item => item.destination === destination),
+    title: (title: string) => menuItems.find(item => item.title === title)
+}
 
 var router: express.Router = express.Router()
 
 router.get("/", (_, res: express.Response) => {
-    res.render('home', {
-        title: 'Home'
-    })
+    res.render('home', getMenuItemBy.destination(''))
+})
+
+router.get("/:route", (req: express.Request, res: express.Response) => {
+    const {
+        route
+    } = req.params
+
+    const item = getMenuItemBy.destination(route)
+
+    if (item.endpoint) {
+        fetchFromAPI(item.endpoint, (data) => {
+            res.render(route, ({ ...item, data: data }))
+        })
+    } else {
+        res.render(route, item)
+    }
 })
 
 export default router

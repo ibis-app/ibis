@@ -2,6 +2,7 @@ import exhbs from 'express-hbs'
 import fs from 'fs'
 import path from 'path'
 import config from './api/config'
+import { menuItems } from './views'
 import { port, hostname } from './config'
 import axios from 'axios'
 
@@ -16,37 +17,23 @@ const readFile = (root: string) => (filename: string, cb: Function) => {
     });
 }
 
-const menuItems: {
-    destination: string,
-    displayName: string
-}[] = [
-    {
-        destination: '/',
-        displayName: 'Home'
-    },
-    {
-        destination: '/therapeutics',
-        displayName: 'Therapeutics'
-    },
-    {
-        destination: '/materia-medica',
-        displayName: 'Materia Medica'
-    },
-    {
-        destination: '/contact',
-        displayName: 'Contact'
-    },
-    {
-        destination: '/source',
-        displayName: 'Source'
-    },
-]
+export const fetchFromAPI = (endpoint: string, cb: (data?: any)=>any) => {
+    const absolutePath = `http://${hostname}:${port}/api/${endpoint}`
+    axios.get(absolutePath)
+        .then((response) => {
+            cb(response.data)
+        })
+        .catch((err) => {
+            console.log(`api err on endpoint '${err.request.path}': ${err.response.status}`)
+            cb()
+        })
+};
 
 exhbs.registerAsyncHelper('menu', (context: any, cb: Function) => {
     const {
         data: {
             root: {
-                title
+                destination
             }
         }
     } = context
@@ -58,12 +45,11 @@ exhbs.registerAsyncHelper('menu', (context: any, cb: Function) => {
 
         const s = menuLayout({
             items: menuItems.map(item => ({
-                style: item.displayName === title ? 'active': '',
-                ...item
+                ...item,
+                style: item.destination === destination ? 'active': '',
+                destination: item.external ? item.destination : `/${item.destination}`
             }))
         })
-
-        console.log(s)
 
         cb(s)
     });
@@ -72,14 +58,6 @@ exhbs.registerAsyncHelper('menu', (context: any, cb: Function) => {
 exhbs.registerAsyncHelper('readFile', readFile(config.paths.applicationRoot))
 exhbs.registerAsyncHelper('readIFile', readFile(config.paths.ibisRoot))
 
-exhbs.registerAsyncHelper('api', function (endpoint: string, cb: Function) {
-    const absolutePath = `http://${hostname}:${port}/api/${endpoint}`
-    axios.get(absolutePath)
-        .then((response) => {
-            cb(new exhbs.SafeString(JSON.stringify(response.data)));
-        })
-        .catch((err) => {
-            console.log(`api err on endpoint '${err.request.path}': ${err.response.status}`)
-            cb()
-        })
-});
+exhbs.registerAsyncHelper('api', (context: any, cb: Function) => {
+    fetchFromAPI(context.hash.endpoint, (data) => cb(new exhbs.SafeString(data)))
+})

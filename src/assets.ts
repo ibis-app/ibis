@@ -5,12 +5,6 @@ import path from 'path'
 let router: express.Router = express.Router()
 
 // if this 404s, make sure to build fomantic-ui
-router.get('/semantic/:asset', (req: express.Request, res: express.Response) => {
-    const {
-        asset
-    } = req.params
-
-    res.sendFile(path.join(config.paths.applicationRoot, 'semantic', 'dist', asset))
-})
+router.use('/semantic', express.static(path.join(config.paths.applicationRoot, 'semantic', 'dist')))
 
 export default router

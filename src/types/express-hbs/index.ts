@@ -33,7 +33,7 @@ declare module 'express-hbs' {
         registerHelper: any;
         registerPartial: any;
         compile: any;
-        registerAsyncHelper: any;
+        registerAsyncHelper: (context: any, fn: Function) => void;
         updateTemplateOptions: any;
         create: () => ExpressHbs;
         __express: any;

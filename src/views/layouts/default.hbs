@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="assets/semantic/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <script async defer src="assets/semantic/semantic.min.js"></script>
+    <script src="assets/semantic/semantic.min.js"></script>
     {{{block "pageStyles"}}}
     <style type="text/css">
   .ui.menu .item img.logo {
@@ -34,9 +34,7 @@
     </div>
     <div class="ui main text container">
         <h1 class="ui header">{{title}}</h1>
-
-        <p>These are words in main</p>
-        {{body}}
+        {{{body}}}
     </div>
     <div class="ui inverted vertical footer segment">
         {{> footer}}

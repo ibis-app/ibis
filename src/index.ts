@@ -10,6 +10,19 @@ import './helpers'
 
 let app = express()
 
+app.use(cors())
+
+app.use((req: express.Request, res, next) => {
+    console.log(JSON.stringify(
+        {
+            date: new Date(),
+            path: req.path,
+            query: req.query,
+            'user-agent': req.headers['user-agent'],
+        }))
+    next()
+})
+
 app.engine('.hbs', exhbs.express4({
     'defaultLayout': path.join(__dirname, 'views', 'layouts', 'default'),
     'extname': '.hbs',
@@ -22,8 +35,6 @@ app.set('views', 'dist/views')
 app.set('view engine', '.hbs')
 
 app.use('/', views)
-
-app.use(cors())
 
 app.use('/assets', assets)
 app.use('/api', api)
