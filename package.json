@@ -6,12 +6,13 @@
     "start": "concurrently --kill-others \"npm:serve:api\" \"npm:serve:app\"",
     "serve:api": "node dist/api/index.js",
     "serve:app": "node dist/index.js",
-    "watch:node": "concurrently \"nodemon dist/index.js\" \"nodemon dist/api/index.js\"",
+    "watch:app": "nodemon dist/index.js",
+    "watch:api": "nodemon dist/api/index.js",
     "build": "tsc",
     "watch:ts": "tsc -w",
     "watch:copy": "cpx \"src/**/*.hbs\" dist --watch",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "watch": "concurrently --kill-others \"npm:watch:ts\" \"npm:watch:node\" \"npm:watch:copy\"",
+    "watch": "concurrently --kill-others \"npm:watch:ts\" \"npm:watch:api\" \"npm:watch:app\" \"npm:watch:copy\"",
     "build:copy": "ts-node copyStaticAssets.ts"
   },
   "repository": {
