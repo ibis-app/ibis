@@ -9,7 +9,7 @@ router.get('/', (_, res: express.Response) => {
 })
 
 router.use('/file', file({
-    endpoint: '/rx',
+    endpoint: 'rx',
     absoluteFilePath: config.relative.ibisRoot('system', 'rx')
 }))
 
