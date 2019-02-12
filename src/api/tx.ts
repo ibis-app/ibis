@@ -3,7 +3,7 @@ import config from './config'
 import file from './file'
 import fs from 'fs'
 import path from 'path'
-import { parseHeaderFromFile, Header } from '../common';
+import { parseHeaderFromFile, Header, modalities } from '../common';
 
 const router = express.Router()
 
@@ -44,8 +44,8 @@ const allInfo = new Promise<TreatmentListing[]>((resolve, reject) => {
 })
 
 router.get('/treatments', (_, res: express.Response) => {
-    allInfo.then((i) => {
-        res.send(i)
+    allInfo.then((treatmentListing) => {
+        res.send([].concat(...treatmentListing.map(t => t.treatments)))
     })
 })
 
