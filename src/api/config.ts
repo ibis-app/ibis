@@ -17,6 +17,9 @@ interface Config {
         user: string,
         rx: string,
         tx: string
+    },
+    relative: {
+        ibisRoot: (...folders: string[]) => string
     }
 }
 
@@ -28,6 +31,9 @@ var config: Config = {
         user: user,
         rx: path.join(system, 'rx'),
         tx: path.join(system, 'tx')
+    },
+    relative: {
+        ibisRoot: (...folders: string[]) => path.join(ibisRoot, ...folders)
     }
 }
 
