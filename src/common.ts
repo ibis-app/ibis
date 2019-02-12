@@ -63,7 +63,15 @@ const possibleNodes: (node: Node) => string[] = (node: Node) => {
         .filter(nodeText => nodeText !== '')
 }
 
-export function parseHeaderFromFile(filepath: string): Promise<any> {
+export interface Header {
+    version: string,
+    tag: string,
+    name: string,
+    category: string
+
+}
+
+export function parseHeaderFromFile(filepath: string): Promise<Header> {
     if (typeof filepath === 'undefined') {
         return Promise.reject('undefined filepath')
     }
