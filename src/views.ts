@@ -15,11 +15,12 @@ export const menuItems: {
         {
             destination: 'therapeutics',
             title: 'Therapeutics',
-            endpoint: 'rx/file/ACUP'
+            endpoint: 'tx/file/ACUP'
         },
         {
             destination: 'materia-medica',
-            title: 'Materia Medica'
+            title: 'Materia Medica',
+            endpoint: 'rx/file/ACUP'
         },
         {
             destination: 'contact',
