@@ -127,7 +127,7 @@ export default (folderRoot: string) => {
         };
     }
 
-    const filepath = (req: express.Request, modality: string, filename: string) => resolved(req, `rx/file/${modality}/${filename}`)
+    const filepath = (req: express.Request, modality: string, filename: string) => resolved(req, `${folderRoot}/file/${modality}/${filename}`)
 
     router.get('/:modality/:file/info', (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const {
