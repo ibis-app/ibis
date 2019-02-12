@@ -2,7 +2,7 @@ import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import { isEmpty } from 'lodash'
-import { getModality, parseHeader, parseHeaderFromFile } from '../common'
+import { getModality, parseHeaderFromFile } from '../common'
 import { parse, HTMLElement, Node, TextNode } from 'node-html-parser'
 
 const nodeMatches = (condition: RegExp) => (node: Node) => condition.test(node.rawText)
@@ -92,7 +92,7 @@ const trimLeft = (condition: RegExp) => {
     }
 }
 
-export default (folderRoot: string) => {
+export default (options: { endpoint: string, absoluteFilePath: string }) => {
     let router = express.Router()
 
     const afterDefinition = trimLeft(/definition/)
@@ -103,7 +103,7 @@ export default (folderRoot: string) => {
             file
         } = req.params;
 
-        fs.readFile(path.join(folderRoot, modality, file), (err, data) => {
+        fs.readFile(path.join(options.absoluteFilePath, modality, file), (err, data) => {
             if (err) {
                 next(err)
                 return
@@ -127,28 +127,23 @@ export default (folderRoot: string) => {
         };
     }
 
-    const filepath = (req: express.Request, modality: string, filename: string) => resolved(req, `${folderRoot}/file/${modality}/${filename}`)
+    const filepath = (req: express.Request, modality: string, filename: string) => resolved(req, `${options.endpoint}/file/${modality}/${filename}`)
 
-    router.get('/:modality/:file/info', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    router.get('/:modality/:file/info', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const {
             modality,
             file
         } = req.params;
 
-        fs.readFile(path.join(folderRoot, modality, file), async (err, data) => {
-            if (err) {
-                next(err)
-            }
+        const filePath = path.join(options.absoluteFilePath, modality, file)
 
-            const interestingNode = await parseHeader(data)
-
-            const [
+        try {
+            const {
                 version,
-                _,
                 tag,
                 name,
                 category
-            ] = interestingNode;
+            } = await parseHeaderFromFile(filePath)
 
             res.send({
                 modality: modality,
@@ -159,7 +154,9 @@ export default (folderRoot: string) => {
                 name: name,
                 category: category
             })
-        })
+        } catch (e) {
+            next(e)
+        }
     });
 
     const getListing: express.RequestHandler = (req, res, next) => {
@@ -167,11 +164,7 @@ export default (folderRoot: string) => {
             modality
         } = req.params;
 
-        let p: string;
-
-        p = path.join(folderRoot, modality)
-
-        fs.readdir(p, (err, items) => {
+        fs.readdir(path.join(options.absoluteFilePath, modality), (err, items) => {
             if (err) {
                 return next(err)
             }
@@ -181,28 +174,33 @@ export default (folderRoot: string) => {
         })
     }
 
-    router.get('/:modality', getListing, async (req: express.Request, res: express.Response) => {
+    router.get('/:modality', getListing, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const {
             modality
         } = req.params
 
-        const meta = await Promise.all(res.locals.listing
-            .map(async (filename: string) => ({
-                filename: filename,
-                filepath: filepath(req, modality, filename),
-                info: await parseHeaderFromFile(path.join(folderRoot, modality, filename)),
-            })))
+        try {
+            const meta = await Promise.all(res.locals.listing
+                .map(async (filename: string) => ({
+                    filename: filename,
+                    filepath: filepath(req, modality, filename),
+                    info: await parseHeaderFromFile(path.join(options.absoluteFilePath, modality, filename)),
+                })))
 
-        const empty = meta.filter((infoObject: any) => isEmpty(infoObject.info) || Object.values(infoObject.info).some(val => typeof val === 'undefined'))
+            const empty = meta.filter((infoObject: any) => isEmpty(infoObject.info) || Object.values(infoObject.info).some(val => typeof val === 'undefined'))
 
-        res.send({
-            modality: {
-                code: modality,
-                ...getModality(modality)
-            },
-            meta: meta,
-            empty: empty
-        })
+            res.send({
+                modality: {
+                    code: modality,
+                    ...getModality(modality)
+                },
+                meta: meta,
+                empty: empty
+            })
+
+        } catch (e) {
+            next(e)
+        }
     })
 
     return router

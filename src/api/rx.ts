@@ -8,6 +8,9 @@ router.get('/', (_, res: express.Response) => {
     res.send('rx')
 })
 
-router.use('/file', file(config.relative.ibisRoot('system', 'rx')))
+router.use('/file', file({
+    endpoint: '/rx',
+    absoluteFilePath: config.relative.ibisRoot('system', 'rx')
+}))
 
 export default router

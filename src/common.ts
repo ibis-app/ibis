@@ -64,13 +64,22 @@ const possibleNodes: (node: Node) => string[] = (node: Node) => {
 }
 
 export function parseHeaderFromFile(filepath: string): Promise<any> {
+    if (typeof filepath === 'undefined') {
+        return Promise.reject('undefined filepath')
+    }
     return new Promise((resolve, reject) => {
         fs.readFile(filepath, async (err, data) => {
             if (err) {
                 reject(err)
             }
 
-            const interestingNode = await parseHeader(data)
+            let interestingNode;
+
+            try {
+                interestingNode = await parseHeader(data)
+            } catch (e) {
+                return reject(e)
+            }
 
             const [
                 version,
