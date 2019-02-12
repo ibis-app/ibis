@@ -24,7 +24,7 @@ export const fetchFromAPI = (endpoint: string, cb: (data?: any)=>any) => {
             cb(response.data)
         })
         .catch((err) => {
-            console.log(`api err on endpoint '${err.request.path}': ${err.response.status}`)
+            console.log(`api err on endpoint '${err.request.path}': ${err.response}`)
             cb()
         })
 };
@@ -62,7 +62,6 @@ exhbs.registerAsyncHelper('ibis_file', (info: any, cb: Function) => {
 })
 
 exhbs.registerAsyncHelper('api', (context: any, cb: Function) => {
-    console.log('fetching from helper')
     fetchFromAPI(context.hash.endpoint, (data) => cb(new exhbs.SafeString(data)))
 })
 
