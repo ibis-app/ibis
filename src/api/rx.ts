@@ -4,6 +4,8 @@ import path from 'path'
 import fs from 'fs'
 import { isEmpty } from 'lodash'
 import { getModality, parseHeader, parseHeaderFromFile } from '../common'
+import { parse, HTMLElement } from 'node-html-parser'
+import { NextFunction } from 'connect';
 
 const router = express.Router()
 
@@ -13,13 +15,22 @@ router.get('/', (_, res: express.Response) => {
     res.send('rx')
 })
 
-router.get('/file/:modality/:treatment', (req: express.Request, res: express.Response) => {
+router.get('/file/:modality/:treatment', (req: express.Request, res: express.Response, next: NextFunction) => {
     const {
         modality,
         treatment
     } = req.params;
 
-    res.sendFile(path.join(rxPath, modality, treatment))
+    fs.readFile(path.join(rxPath, modality, treatment), (err, data) => {
+        if (err) next(err)
+
+        const root = parse(data.toString(), { noFix: false })
+
+        const body = root.childNodes.find(node => node instanceof HTMLElement)
+
+        res.type('html')
+        res.send(body.toString())
+    })
 });
 
 function resolved(req: express.Request, endpoint: string): ({ relative: string, absolute: string }) {
