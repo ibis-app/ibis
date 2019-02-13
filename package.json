@@ -13,7 +13,8 @@
     "watch:copy": "cpx \"src/**/*.hbs\" dist --watch",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "watch": "concurrently --kill-others \"npm:watch:ts\" \"npm:watch:api\" \"npm:watch:app\" \"npm:watch:copy\"",
-    "build:copy": "ts-node copyStaticAssets.ts"
+    "build:copy": "ts-node copyStaticAssets.ts",
+    "build:bundle": "browserify dist/public/scripts/app.js > dist/public/scripts/main.js"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
     "@types/lodash": "^4.14.120",
     "@types/shelljs": "^0.8.2",
     "axios": "^0.18.0",
+    "browserify": "^16.2.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-hbs": "^2.0.2",
