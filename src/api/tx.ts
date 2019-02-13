@@ -3,7 +3,7 @@ import config from './config'
 import file from './file'
 import fs from 'fs'
 import path from 'path'
-import { parseHeaderFromFile, Header, modalities } from '../common';
+import { parseHeaderFromFile, Header } from '../common';
 
 const router = express.Router()
 
