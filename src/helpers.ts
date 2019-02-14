@@ -4,6 +4,7 @@ import path from 'path'
 import config from './api/config'
 import { menuItems } from './views'
 import { apiHostname } from './api/config'
+import { modalities } from './common'
 import axios from 'axios'
 
 const readFile = (root: string) => (filename: string, cb: Function) => {
@@ -12,7 +13,7 @@ const readFile = (root: string) => (filename: string, cb: Function) => {
             console.error(err)
             cb()
         } else {
-            cb(new exhbs.SafeString(content));
+            cb(new exhbs.SafeString(content))
         }
     });
 }
@@ -28,6 +29,10 @@ export const fetchFromAPI = (endpoint: string, cb: (data?: any)=>any) => {
             cb()
         })
 };
+
+exhbs.registerHelper('modalities', (options: any) => {
+    return Object.keys(modalities).reduce((l, key) => l.concat({ code: key, ...modalities[key]}), [])
+})
 
 exhbs.registerAsyncHelper('menu', (context: any, cb: Function) => {
     const {
