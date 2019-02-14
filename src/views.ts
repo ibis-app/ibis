@@ -85,7 +85,6 @@ router.get('/:route/:modality_code', (req, res, next) => {
     }
 
     fetchFromAPI(`${item.route}/file/${modality_code}`, (data) => {
-        console.dir(data)
         res.render('listing', {
             title: modalities[modality_code].displayName,
             data: data
