@@ -1,13 +1,15 @@
 import express from 'express'
 import path from 'path'
 import { fetchFromAPI } from './helpers'
+import { modalities } from './common'
 
 export const menuItems: {
     destination: string,
     title: string,
     external?: boolean,
     endpoint?: string,
-    needs_modalities?: boolean
+    needs_modalities?: boolean,
+    route?: string
 }[] = [
         {
             destination: '',
@@ -16,12 +18,14 @@ export const menuItems: {
         {
             destination: 'therapeutics',
             title: 'Therapeutics',
-            needs_modalities: true
+            needs_modalities: true,
+            route: 'tx'
         },
         {
             destination: 'materia-medica',
             title: 'Materia Medica',
-            needs_modalities: true
+            needs_modalities: true,
+            route: 'rx'
         },
         {
             destination: 'contact',
@@ -65,6 +69,28 @@ router.get("/:route", (req: express.Request, res: express.Response, next: expres
     } else {
         res.render(route, item)
     }
+})
+
+router.get('/:route/:modality_code', (req, res, next) => {
+    const {
+        route,
+        modality_code
+    } = req.params
+
+    const item = getMenuItemBy.destination(route)
+
+    if (!item) {
+        next(new Error('no such route' + route))
+        return
+    }
+
+    fetchFromAPI(`${item.route}/file/${modality_code}`, (data) => {
+        console.dir(data)
+        res.render('listing', {
+            title: modalities[modality_code].displayName,
+            data: data
+        })
+    })
 })
 
 export default router
