@@ -4,43 +4,70 @@
 <!-- sourced: https://fomantic-ui.com/examples/fixed.html -->
 
 <head>
-    <meta charset="UTF-8">
-    <title>IBIS - {{{title}}}</title>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
-        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="/assets/semantic/semantic.min.css">
-    <script src="/assets/semantic/semantic.min.js"></script>
-    {{{block "pageStyles"}}}
-    <style type="text/css">
-  .ui.menu .item img.logo {
-    margin-right: 1.5em;
-  }
-  .main.container {
-    margin-top: 7em;
-  }
-  .wireframe {
-    margin-top: 2em;
-  }
-  .ui.footer.segment {
-    margin: 5em 0em 0em;
-    padding: 5em 0em;
-  }
-    </style>
+  <meta charset="UTF-8">
+  <title>IBIS - {{{title}}}</title>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="/assets/semantic/semantic.min.css">
+  <script src="/assets/semantic/semantic.min.js"></script>
+  {{{block "pageStyles"}}}
+  <style type="text/css">
+    .ui.menu .item img.logo {
+      margin-right: 1.5em;
+    }
+
+    .main.container {
+      margin-top: 7em;
+    }
+
+    .wireframe {
+      margin-top: 2em;
+    }
+
+    .ui.footer.segment {
+      margin: 5em 0em 0em;
+      padding: 5em 0em;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="ui fixed inverted menu">
-        {{{menu}}}
-    </div>
-    <div class="ui main text container">
+  {{#if needs_modalities}}
+  {{> modality_menu (modalities)}}
+  {{/if}}
+  <div class="pusher">
+  <div class="ui inverted menu">
+    <a id="modality-menu-toggle" 
+    class="ui item {{#unless needs_modalities}}disabled{{/unless}} inverted icon">
+    <i class="book medical icon"></i>
+    </a>
+    {{{menu}}}
+  </div>
+
+    <div class="ui container">
+      <div class="ui text container">
         <h1 class="ui header">{{title}}</h1>
         {{{body}}}
+        {{> placeholder}}
+        {{> placeholder}}
+        {{> placeholder}}
+        {{> placeholder}}
+        {{> placeholder}}
+        {{> placeholder}}
+        {{> placeholder}}
+        {{> placeholder}}
+        {{> placeholder}}
+        {{> placeholder}}
+      </div>
     </div>
     <div class="ui inverted vertical footer segment">
-        {{> footer}}
+      {{> footer}}
     </div>
+
+  </div>
 </body>
 
 {{{block "scripts"}}}
-    <script src="/assets/scripts/main.js"></script>
+<script src="/assets/scripts/main.js"></script>
+
 </html>

@@ -2,7 +2,7 @@
     <h2 class="ui header">
         <a href="{{filepath.absolute}}">{{title_case info.name}}</a>
 
-        <button class="ui button" data-action="get htm" data-filepath="{{filepath.relative}}">
+        <button class="ui button htm-link" data-action="get htm" data-filepath="{{filepath.relative}}">
             Get some data
         </button>
         {{#with info}}
@@ -18,3 +18,4 @@
         {{/with}}
     </h2>
 </div>
+<div class="ui hidden divider"></div>
