@@ -1,8 +1,25 @@
 import express from 'express'
 import config from './api/config'
 import path from 'path'
+import browserify from 'browserify'
 
 let router: express.Router = express.Router()
+
+let b = browserify()
+b.add('./dist/public/scripts/app.js')
+
+router.get('/scripts/main.js', (_, res, next) => {
+    b.bundle((err, src) => {
+        if (err) {
+            console.error('failed to send bundle')
+            next(err)
+            return
+        }
+
+        res.type('script')
+        res.send(src.toString())
+    })
+})
 
 router.use('/', express.static(path.join(config.paths.applicationRoot, 'dist', 'public'), {
     index: false,

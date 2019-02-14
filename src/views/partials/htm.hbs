@@ -2,6 +2,9 @@
     <h2 class="ui header">
         <a href="{{filepath.absolute}}">{{title_case info.name}}</a>
 
+        <button class="ui button" data-action="get htm" data-filepath="{{filepath.relative}}">
+            Get some data
+        </button>
         {{#with info}}
         <div class="ui label">{{version}}</div>
         <div class="sub header">
@@ -14,5 +17,4 @@
             </div>
         {{/with}}
     </h2>
-    {{{ibis_file this}}}
 </div>
