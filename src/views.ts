@@ -6,7 +6,8 @@ export const menuItems: {
     destination: string,
     title: string,
     external?: boolean,
-    endpoint?: string
+    endpoint?: string,
+    needs_modalities?: boolean
 }[] = [
         {
             destination: '',
@@ -15,12 +16,12 @@ export const menuItems: {
         {
             destination: 'therapeutics',
             title: 'Therapeutics',
-            endpoint: 'tx/file/ACUP'
+            needs_modalities: true
         },
         {
             destination: 'materia-medica',
             title: 'Materia Medica',
-            endpoint: 'rx/file/ACUP'
+            needs_modalities: true
         },
         {
             destination: 'contact',
