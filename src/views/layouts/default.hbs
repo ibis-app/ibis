@@ -9,6 +9,7 @@
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
   <link rel="stylesheet" type="text/css" href="/assets/semantic/semantic.min.css">
+  <link rel="icon" href="assets/favicon.ico">
   <script src="/assets/semantic/semantic.min.js"></script>
   {{{block "pageStyles"}}}
   <style type="text/css">
@@ -48,6 +49,9 @@
     <div class="ui container">
       <div class="ui text container">
         <h1 class="ui header">{{title}}</h1>
+        {{#if needs_modalities}}
+        {{> search_box}}
+        {{/if}}
         {{{body}}}
         {{> placeholder}}
         {{> placeholder}}
