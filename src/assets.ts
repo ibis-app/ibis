@@ -21,6 +21,10 @@ router.get('/scripts/main.js', (_, res, next) => {
     })
 })
 
+router.get('/favicon.ico', (_, res) => {
+    res.sendFile(config.relative.ibisRoot('system', 'rsrcs', '32IBIS3.ico'))
+})
+
 router.use('/', express.static(path.join(config.paths.applicationRoot, 'dist', 'public'), {
     index: false,
     maxAge: '100000'
