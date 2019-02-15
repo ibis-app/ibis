@@ -1,6 +1,7 @@
 import express from 'express'
 import rx from './rx'
 import tx from './tx'
+import db from './db'
 import { requestLogger, modalities } from '../common'
 import cors from 'cors'
 
@@ -20,5 +21,7 @@ app.get('/modalities', (_, res: express.Response) => {
 
 app.use('/rx', rx)
 app.use('/tx', tx)
+
+app.use('/data', db)
 
 export default app
