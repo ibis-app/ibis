@@ -60,6 +60,7 @@ router.get("/:route", (req: express.Request, res: express.Response, next: expres
 
     if (typeof item === 'undefined') {
         next(new Error(`no such route found: ${route}`))
+        return
     }
 
     if (item.endpoint) {
