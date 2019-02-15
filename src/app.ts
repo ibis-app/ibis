@@ -24,9 +24,9 @@ app.set('views', 'dist/views')
 
 app.set('view engine', '.hbs')
 
-app.use('/', views)
-
 app.use('/assets', assets)
+
+app.use('/', views)
 
 if (process.env["NODE_ENV"] === 'production') {
     app.enable('view cache')
