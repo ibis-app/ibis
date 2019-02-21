@@ -1,7 +1,10 @@
+import './promises'
 import _ from 'lodash'
 import fs from 'fs'
 import { parse, HTMLElement, TextNode, Node } from 'node-html-parser'
 import { RequestHandler, Request, NextFunction } from 'express'
+import bluebird from 'bluebird'
+global.Promise = bluebird
 
 export const modalities: { [code: string]: { displayName: string } } = {
     'acup': {
@@ -44,23 +47,25 @@ export const getModality = (codeOrDisplayName: string) => {
     }
 }
 
-const possibleNodes: (node: Node) => string[] = (node: Node) => {
+const flattenNode = (node: Node) => {
+    if (node instanceof TextNode) {
+        return [node.rawText.trim()]
+    } else if (node instanceof HTMLElement) {
+        if (node.childNodes[0] instanceof TextNode) {
+            return node.childNodes.slice(0, 10).map(n => n.rawText.trim())
+        }
+    }
+    return []
+}
+
+const possibleNodes = (node: Node) => {
     if (!node) {
         return []
     }
 
     return _.flatten(node.childNodes
-        .map(node => {
-            if (node instanceof TextNode) {
-                return [node.rawText.trim()]
-            } else if (node instanceof HTMLElement) {
-                if (node.childNodes[0] instanceof TextNode) {
-                    return node.childNodes.slice(0, 10).map(n => n.rawText.trim())
-                }
-            }
-            return []
-        }))
-        .filter(nodeText => nodeText !== '')
+        .map(flattenNode)
+        .filter(nodeText => nodeText.every(text => text !== '')))
 }
 
 export interface Header {
@@ -71,39 +76,30 @@ export interface Header {
 
 }
 
-export function parseHeaderFromFile(filepath: string): Promise<Header> {
+export async function parseHeaderFromFile(filepath: string): Promise<Header> {
     if (typeof filepath === 'undefined') {
         return Promise.reject('undefined filepath')
     }
-    return new Promise((resolve, reject) => {
-        fs.readFile(filepath, async (err, data) => {
-            if (err) {
-                reject(err)
-            }
 
-            let interestingNode;
+    const buffer = fs.readFileSync(filepath)
 
-            try {
-                interestingNode = await parseHeader(data)
-            } catch (e) {
-                return reject(e)
-            }
+    const data = buffer.toString()
 
-            const [
-                version,
-                _,
-                tag,
-                name,
-                category
-            ] = interestingNode;
+    const interestingNode = parseHeader(data);
 
-            resolve({
-                version: version,
-                tag: tag,
-                name: name,
-                category: category
-            })
-        })
+    const [
+        version,
+        _,
+        tag,
+        name,
+        category
+    ] = interestingNode;
+
+    return ({
+        version: version,
+        tag: tag,
+        name: name,
+        category: category
     })
 }
 
@@ -111,8 +107,8 @@ const versionPattern = /^-IBIS-(\d+)\.(\d+)\.(\d+)-$/
 
 // TODO: this doesn't reliably parse the headers for most files
 // @bspriggs investigate
-export async function parseHeader(source: Buffer): Promise<string[]> {
-    const root = parse(source.toString(), { noFix: false, lowerCaseTagName: true })
+export function parseHeader(source: string): string[] {
+    const root = parse(source, { noFix: false, lowerCaseTagName: false })
 
     const htmlRoot = (root.childNodes
         .find(node => node instanceof HTMLElement) as HTMLElement)
@@ -121,10 +117,13 @@ export async function parseHeader(source: Buffer): Promise<string[]> {
         return []
     }
 
+    const head = htmlRoot.querySelector("HEAD")
+    const body = htmlRoot.querySelector("BODY")
+
     const interestingNodes: string[] = [].concat(
         possibleNodes(htmlRoot),
-        possibleNodes(htmlRoot.querySelector("head")),
-        possibleNodes(htmlRoot.querySelector("body")))
+        head,
+        body)
 
     const first = interestingNodes.findIndex(node => versionPattern.test(node))
 
