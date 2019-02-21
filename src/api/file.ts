@@ -2,12 +2,44 @@ import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import { isEmpty } from 'lodash'
-import { getModality, parseHeaderFromFile } from '../common'
+import { Header, getModality, parseHeaderFromFile } from '../common'
 import { parse, HTMLElement, Node, TextNode } from 'node-html-parser'
 
 const nodeMatches = (condition: RegExp) => (node: Node) => condition.test(node.rawText)
 const childrenContainsDefinitionText = (condition: RegExp) => (node: Node): boolean => node.childNodes.some(nodeMatches(condition))
 const emptyNode = (node: Node) => node.rawText.trim() === ''
+
+export const getFileInfo: (a: string, b: string, l: string[]) => Promise<{ filename: string, header: Header }[]> = (absoluteFilePath: string, modality: string, listing: string[]) => {
+    const promises = listing.map(async (filename: string) => ({
+        filename: filename,
+        header: await parseHeaderFromFile(path.join(absoluteFilePath, modality, filename)),
+    }))
+    return Promise.all(promises)
+}
+
+export const getListing = (absoluteFilePath: string, modality: string) => new Promise<string[]>((resolve, reject) => {
+    fs.readdir(path.join(absoluteFilePath, modality), (err, items) => {
+        if (err) {
+            return reject(err)
+        }
+        resolve(items)
+    })
+})
+
+const addModalityListingToLocals: (absoluteFilePath: string) => express.RequestHandler = (absoluteFilePath: string) => async (req, res, next) => {
+    const {
+        modality
+    } = req.params;
+
+    try {
+        const listing = await getListing(absoluteFilePath, modality)
+        res.locals.listing = listing
+        next()
+    } catch (e) {
+        next(e)
+        return
+    }
+}
 
 const trimEmptyNodes = (root: Node): Node | undefined => {
     if (root.childNodes.length === 0) {
@@ -159,35 +191,16 @@ export default (options: { endpoint: string, absoluteFilePath: string, trimLeftP
         }
     });
 
-    const getListing: express.RequestHandler = (req, res, next) => {
-        const {
-            modality
-        } = req.params;
-
-        fs.readdir(path.join(options.absoluteFilePath, modality), (err, items) => {
-            if (err) {
-                return next(err)
-            }
-
-            res.locals.listing = items
-            next()
-        })
-    }
-
-    router.get('/:modality', getListing, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    router.get('/:modality', addModalityListingToLocals(options.absoluteFilePath), async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const {
             modality
         } = req.params
 
         try {
-            const meta = await Promise.all(res.locals.listing
-                .map(async (filename: string) => ({
-                    filename: filename,
-                    filepath: filepath(req, modality, filename),
-                    info: await parseHeaderFromFile(path.join(options.absoluteFilePath, modality, filename)),
-                })))
+            const meta = (await getFileInfo(options.absoluteFilePath, modality, res.locals.listing))
+                .map(x => ({ filepath: filepath(req, modality, x.filename), ...x}))
 
-            const empty = meta.filter((infoObject: any) => isEmpty(infoObject.info) || Object.values(infoObject.info).some(val => typeof val === 'undefined'))
+            const empty = meta.filter((infoObject) => isEmpty(infoObject.header) || Object.values(infoObject.header).some(val => typeof val === 'undefined'))
 
             res.send({
                 modality: {
