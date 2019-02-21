@@ -3,8 +3,6 @@ import _ from 'lodash'
 import fs from 'fs'
 import { parse, HTMLElement, TextNode, Node } from 'node-html-parser'
 import { RequestHandler, Request, NextFunction } from 'express'
-import bluebird from 'bluebird'
-global.Promise = bluebird
 
 export const modalities: { [code: string]: { displayName: string } } = {
     'acup': {
