@@ -4,9 +4,17 @@ import { Header, modalities } from '../common'
 import config from './config'
 import fuse from 'fuse.js'
 import { getFileInfo, getListing } from './file';
-import nano from 'nano'
+import FileAsync from 'lowdb/adapters/FileAsync'
+import lowdb, { LowdbAsync } from 'lowdb'
 
-const server = nano('http://localhost:5984')
+const adapter = new FileAsync<Database>('db.json', {
+    defaultValue: {
+        tx: [],
+        rx: [],
+        diseases: [],
+        treatments: []
+    }
+})
 
 const router = express.Router()
 
@@ -32,20 +40,15 @@ const searchDiseases = (options: fuse.FuseOptions<Directory> = {
     minMatchCharLength: 1,
     keys: ["filename"]
 }) =>
-    (query: string) =>
-        new Promise(async (resolve, reject) => {
-            try {
-                const data = await server.use('tx').find({
-                    selector: {
-                        _id: query
-                    }
-                })
-                const search = new fuse(data.docs, options)
-                resolve(search.search(query))
-            } catch (e) {
-                reject(e)
-            }
-        })
+    async (query: string) => {
+        const db = await database()
+        const data = db.get('tx').value()
+        console.log(query, data.length)
+        const search = new fuse(Array.from(data.values()), options)
+        return search.search(query)
+    }
+
+const s = searchDiseases()
 
 const getAllTheMagic = async (abs: string) => {
     return await Promise.all(Object.keys(modalities).map(async modality => {
@@ -59,30 +62,29 @@ const getAllTheMagic = async (abs: string) => {
 }
 
 router.get('/', async (req, res) => {
-    res.send(await searchDiseases()(req.query.q))
+    res.send(await s(req.query.q))
 })
 
-const initialize = async () => {
-    await server.db.create('tx')
-    await server.db.create('rx')
+const database: () => Promise<lowdb.LowdbAsync<Database>> = () => lowdb(adapter)
 
-    const tx_db: nano.DocumentScope<Directory> = server.db.use('tx')
+const initialize = async () => {
+    const db = await database()
+
     console.log('initializing')
+
+    if (db.get('tx').value().length !== 0) {
+        console.log('we done')
+        return
+    }
+
     const tx = await getAllTheMagic(config.relative.ibisRoot('system', 'tx'))
     // const rx = await getAllTheMagic(config.relative.ibisRoot('system', 'rx'))
     console.log('got all the magic')
 
-    const promises = tx.map(modality => {
-        console.log('mapping modality', modality)
-        return Promise.all(modality.map(async listing => {
-            console.log('mapping listing', listing)
-            await tx_db.insert(({ _id: listing.filename, _rev: listing.filename, ...listing }), listing.filename)
-        }))
-    })
-
-    await Promise.all(promises)
-
+    const allListings = [].concat(tx)
+    db.get('tx').splice(0, 0, ...allListings).write()
     console.log('finished mapping listings')
+    console.log(db.get('tx').value().length)
     // get ALL the files everywhere
     // put them in the diseases/ tx/ rx
 }
