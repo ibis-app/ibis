@@ -1,6 +1,7 @@
 //@ts-check
 const { src, dest, watch, series } = require('gulp')
 const clean = require('gulp-clean')
+const newer = require('gulp-newer')
 const glob = require('glob')
 
 const distributable = "dist"
@@ -24,6 +25,7 @@ function cleanStaticAssets() {
 
 function copyStaticAssets() {
     return src(staticAssets(source))
+        .pipe(newer(distributable))
         .pipe(dest(distributable))
 }
 

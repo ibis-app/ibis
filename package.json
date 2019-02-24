@@ -13,7 +13,7 @@
     "watch:copy": "gulp watch",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "watch": "concurrently --kill-others \"npm:watch:ts\" \"npm:watch:api\" \"npm:watch:app\" \"npm:watch:copy\"",
-    "build:copy": "ts-node copyStaticAssets.ts",
+    "build:copy": "gulp copy",
     "build:bundle": "browserify dist/public/scripts/app.js > dist/public/scripts/main.js"
   },
   "repository": {
@@ -59,9 +59,9 @@
     "concurrently": "^4.1.0",
     "gulp": "^4.0.0",
     "gulp-clean": "^0.4.0",
+    "gulp-debug": "^4.0.0",
+    "gulp-newer": "^1.4.0",
     "nodemon": "^1.18.10",
-    "shelljs": "^0.8.3",
-    "ts-node": "^8.0.2",
     "tslint": "^5.13.0",
     "typescript": "^3.3.3333"
   },
