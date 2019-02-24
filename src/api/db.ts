@@ -76,12 +76,16 @@ router.get('/', async (req, res) => {
 
 const database: () => Promise<lowdb.LowdbAsync<Database>> = () => lowdb(adapter)
 
+const allListings: (d: Directory[][]) => Directory[] = (d) => [].concat(...d)
+
+const getName: (d: Directory[][]) => string[] = (d) => [].concat(...d.map(modality => modality.map(listing => listing.header.name)))
+
 const initialize = async () => {
     const db = await database()
 
     console.log('initializing')
 
-    if (db.get('tx').value().length !== 0) {
+    if (db.get('treatments').value().length !== 0) {
         console.log('we done')
         return
     }
@@ -90,11 +94,8 @@ const initialize = async () => {
     const rxs = await getAllTheMagic(config.relative.ibisRoot('system', 'rx'))
     console.log('got all the magic')
 
-    const allListings: (d: Directory[][]) => Directory[] = (d) => [].concat(...d)
-    const getName: (d: Directory[][]) => string[] = (d) => [].concat(...d.map(modality => modality.map(listing => listing.header.name)))
-
-    db.get('tx').splice(0, 0, ...allListings(txs)).write()
-    db.get('rx').splice(0, 0, ...allListings(rxs)).write()
+    db.get('treatments').splice(0, 0, ...allListings(txs)).write()
+    db.get('diseases').splice(0, 0, ...allListings(rxs)).write()
     db.get('diseaseNames').splice(0, 0, ...getName(txs)).write()
     db.get('treatmentNames').splice(0, 0, ...getName(rxs)).write()
     console.log('finished mapping listings')
