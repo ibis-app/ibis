@@ -11,8 +11,8 @@ const emptyNode = (node: Node) => node.rawText.trim() === ''
 
 export const getFileInfo: (a: string, b: string, l: string[]) => Promise<{ filename: string, header: Header }[]> = (absoluteFilePath: string, modality: string, listing: string[]) => {
     const promises = listing.map(async (filename: string) => ({
-        filename: filename,
-        header: await parseHeaderFromFile(path.join(absoluteFilePath, modality, filename)),
+        filename: filename.slice(),
+        header: parseHeaderFromFile(path.join(absoluteFilePath, modality, filename)),
     }))
     return Promise.all(promises)
 }
@@ -175,7 +175,7 @@ export default (options: { endpoint: string, absoluteFilePath: string, trimLeftP
                 tag,
                 name,
                 category
-            } = await parseHeaderFromFile(filePath)
+            } = parseHeaderFromFile(filePath)
 
             res.send({
                 modality: modality,

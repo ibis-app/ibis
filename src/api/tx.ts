@@ -1,3 +1,4 @@
+import '../promises'
 import express from 'express'
 import config from './config'
 import file from './file'
@@ -16,35 +17,37 @@ interface TreatmentListing {
     treatments: Header[]
 }
 
-const allInfo = new Promise<TreatmentListing[]>((resolve, reject) => {
-    fs.readdir(config.paths.tx, async (err, items) => {
-        if (err) {
-            return reject(err)
-        }
+const allInfo = () => new Promise<TreatmentListing[]>(async (resolve, reject) => {
+    let items: string[];
 
-        const dirs = items.filter(item => fs.statSync(path.join(config.paths.tx, item)).isDirectory())
-        const listing = await Promise.all(dirs.map(dir => {
-            return new Promise<{ modality: string, treatments: Header[] }>((resolve, reject) => {
-                fs.readdir(path.join(config.paths.tx, dir), async (err: any, items: any) => {
-                    if (err) return reject(err)
-                    try {
-                        const infos: Header[] = items.map(async (item: string) => await parseHeaderFromFile(path.join(config.paths.tx, dir, item)))
-                        resolve({
-                            modality: dir,
-                            treatments: await Promise.all(infos)
-                        })
-                    } catch (err) {
-                        reject(err)
-                    }
-                })
-            })
-        }))
-        resolve(listing)
-    })
+    try {
+        items = fs.readdirSync(config.paths.tx)
+    } catch (e) {
+        return reject(e)
+    }
+
+    const dirs = items.filter(item => fs.statSync(path.join(config.paths.tx, item)).isDirectory())
+
+    const listing = await Promise.all(dirs.map(async dir => {
+        const items = await new Promise<string[]>(async (resolve, reject) => {
+            fs.readdir(path.join(config.paths.tx, dir), async (err: any, items: string[]) => {
+                if (err)
+                    return reject(err);
+                resolve(items);
+            });
+        });
+        const infos = items.map((item: string) => parseHeaderFromFile(path.join(config.paths.tx, dir, item)));
+        return ({
+            modality: dir,
+            treatments: await Promise.all(infos)
+        });
+    }))
+
+    resolve(listing)
 })
 
 router.get('/treatments', (_, res: express.Response) => {
-    allInfo.then((treatmentListing) => {
+    allInfo().then((treatmentListing) => {
         res.send([].concat(...treatmentListing.map(t => t.treatments)))
     })
 })

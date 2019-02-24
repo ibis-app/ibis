@@ -4,8 +4,9 @@ import { Header, modalities } from '../common'
 import config from './config'
 import fuse from 'fuse.js'
 import { getFileInfo, getListing } from './file';
-import { BetterFileAsync } from './BetterFileAsync'
+import BetterFileAsync from './BetterFileAsync'
 import lowdb from 'lowdb'
+
 
 const adapter = new BetterFileAsync<Database>('db.json', {
     defaultValue: {
@@ -43,8 +44,9 @@ const searchDiseases = (options: fuse.FuseOptions<Directory> = {
     async (query: string) => {
         const db = await database()
         const data = db.get('tx').value()
-        console.log(query, data.length)
-        const search = new fuse(Array.from(data.values()), options)
+        const values = Array.from(data.values())
+        console.log(query, values.length, values)
+        const search = new fuse(values, options)
         return search.search(query)
     }
 
@@ -77,14 +79,18 @@ const initialize = async () => {
         return
     }
 
-    const tx = await getAllTheMagic(config.relative.ibisRoot('system', 'tx'))
-    // const rx = await getAllTheMagic(config.relative.ibisRoot('system', 'rx'))
+    const txs = await getAllTheMagic(config.relative.ibisRoot('system', 'tx'))
+    const rxs = await getAllTheMagic(config.relative.ibisRoot('system', 'rx'))
     console.log('got all the magic')
 
-    const allListings = [].concat(tx)
-    db.get('tx').splice(0, 0, ...allListings).write()
+    const allListings: (d: Directory[][]) => Directory[] = (d) => [].concat(...d)
+    const getName: (d: Directory[][]) => string[] = (d) => [].concat(...d.map(modality => modality.map(listing => listing.header.name)))
+
+    db.get('tx').splice(0, 0, ...allListings(txs)).write()
+    db.get('rx').splice(0, 0, ...allListings(rxs)).write()
+    db.get('diseases').splice(0, 0, ...getName(txs)).write()
+    db.get('treatments').splice(0, 0, ...getName(rxs)).write()
     console.log('finished mapping listings')
-    console.log(db.get('tx').value().length)
     // get ALL the files everywhere
     // put them in the diseases/ tx/ rx
 }

@@ -74,9 +74,9 @@ export interface Header {
 
 }
 
-export async function parseHeaderFromFile(filepath: string): Promise<Header> {
+export function parseHeaderFromFile(filepath: string): Header {
     if (typeof filepath === 'undefined') {
-        return Promise.reject('undefined filepath')
+        throw new Error('undefined filepath')
     }
 
     const buffer = fs.readFileSync(filepath)
@@ -128,7 +128,7 @@ export function parseHeader(source: string): string[] {
     // console.log(first)
     // console.dir(interestingNodes)
 
-    return interestingNodes.slice(first, first + 5)
+    return interestingNodes.slice(first, first + 5).map(s => s.slice())
 }
 
 export const requestLogger: RequestHandler = (req: Request, _, next: NextFunction) => {
