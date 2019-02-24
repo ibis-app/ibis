@@ -1,3 +1,5 @@
+'use strict';
+
 import '../promises'
 import FileAsync from 'lowdb/adapters/FileAsync'
 import pify from 'pify'
@@ -39,6 +41,4 @@ class BetterFileAsync extends FileAsync {
     }
 }
 
-module.export = {
-    BetterFileAsync
-}
+module.exports = BetterFileAsync
