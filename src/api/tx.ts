@@ -17,7 +17,7 @@ interface TreatmentListing {
     treatments: Header[]
 }
 
-const allInfo = async () => {
+const allInfo: () => Promise<TreatmentListing[]> = async () => {
     const items: string[] = fs.readdirSync(config.paths.tx)
 
     const dirs = items.filter(item => fs.statSync(path.join(config.paths.tx, item)).isDirectory())
