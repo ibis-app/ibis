@@ -52,8 +52,8 @@ const searchDiseases = (options: fuse.FuseOptions<Directory> = {
 
 const s = searchDiseases()
 
-const getAllTheMagic = async (abs: string) => {
-    return await Promise.all(Object.keys(modalities).map(async modality => {
+const getAllTheMagic = async (abs: string) => await Promise.all(
+    Object.keys(modalities).map(async modality => {
         console.debug("getting", abs, modality)
         const listing = await getListing(abs, modality)
         const fileInfos = await getFileInfo(abs, modality, listing)
@@ -61,7 +61,7 @@ const getAllTheMagic = async (abs: string) => {
 
         return fileInfos
     }))
-}
+
 
 router.get('/', async (req, res) => {
     res.send(await s(req.query.q))
