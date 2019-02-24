@@ -1,3 +1,4 @@
+import '../promises'
 import express from 'express'
 import rx from './rx'
 import tx from './tx'
