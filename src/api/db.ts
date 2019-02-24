@@ -31,19 +31,18 @@ export interface Database {
     rx: Directory[]
 }
 
-const searchDiseases = (options: fuse.FuseOptions<Directory> = {
+const searchDiseases = (options: fuse.FuseOptions<string> = {
     shouldSort: true,
     includeMatches: true,
     threshold: 0.6,
     location: 0,
     distance: 100,
     maxPatternLength: 32,
-    minMatchCharLength: 1,
-    keys: ["filename"]
+    minMatchCharLength: 1
 }) =>
     async (query: string) => {
         const db = await database()
-        const data = db.get('tx').value()
+        const data = db.get('diseases').value()
         const values = Array.from(data.values())
         console.log(query, values.length, values)
         const search = new fuse(values, options)
@@ -64,7 +63,12 @@ const getAllTheMagic = async (abs: string) => await Promise.all(
 
 
 router.get('/', async (req, res) => {
-    res.send(await s(req.query.q))
+    if (req.query.q) {
+        res.send(await s(req.query.q))
+    } else {
+        const db = await database()
+        res.send(db.value())
+    }
 })
 
 const database: () => Promise<lowdb.LowdbAsync<Database>> = () => lowdb(adapter)

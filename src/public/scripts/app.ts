@@ -11,7 +11,9 @@ $('#modality-menu-toggle').click(() => {
     }
 });
 
-$('form.search-box').submit(search);
+document.querySelectorAll('form.search-box').forEach(element => {
+    element.addEventListener('submit', search)
+});
 
 ($('.ui.button.htm-link') as any).api({
     encodeParameters: false,
