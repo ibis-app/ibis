@@ -6,9 +6,12 @@ const glob = require('glob')
 const distributable = "dist"
 const source = "src"
 
-const staticAssets = function (prefix) {
+/**
+ * @param {string} prefix
+ */
+function staticAssets(prefix) {
     return ["**/*.hbs"].map(pattern => `${prefix}/${pattern}`)
-} 
+}
 
 function watchStaticAssets(_cb) {
     watch(staticAssets(source), series(cleanStaticAssets, copyStaticAssets))
@@ -16,12 +19,12 @@ function watchStaticAssets(_cb) {
 
 function cleanStaticAssets() {
     return src(staticAssets(distributable), { read: false })
-          .pipe(clean())
+        .pipe(clean())
 }
 
 function copyStaticAssets() {
-    return src(staticAssets(src))
-           .pipe(dest(distributable))
+    return src(staticAssets(source))
+        .pipe(dest(distributable))
 }
 
 exports.ls = function (cb) {
