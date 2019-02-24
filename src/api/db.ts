@@ -74,13 +74,19 @@ router.get('/', async (req, res) => {
     }
 })
 
-const database: () => Promise<lowdb.LowdbAsync<Database>> = () => lowdb(adapter)
+function database(): Promise<lowdb.LowdbAsync<Database>> {
+    return lowdb(adapter)
+}
 
-const allListings: (d: Directory[][]) => Directory[] = (d) => [].concat(...d)
+function allListings(d: Directory[][]): Directory[] {
+    return [].concat(...d)
+}
 
-const getName: (d: Directory[][]) => string[] = (d) => [].concat(...d.map(modality => modality.map(listing => listing.header.name)))
+function getName(d: Directory[][]): string[] {
+ return [].concat(...d.map(modality => modality.map(listing => listing.header.name)))
+}
 
-const initialize = async () => {
+async function initialize() {
     const db = await database()
 
     console.log('initializing')
