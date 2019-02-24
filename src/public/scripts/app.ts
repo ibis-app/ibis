@@ -1,6 +1,6 @@
 import './reload'
 import './semantic.api'
-import './search_bar'
+import { search } from './search_box'
 
 declare var $: JQueryStatic
 
@@ -10,6 +10,8 @@ $('#modality-menu-toggle').click(() => {
         menu.sidebar('toggle')
     }
 });
+
+$('form.search-box').submit(search);
 
 ($('.ui.button.htm-link') as any).api({
     encodeParameters: false,
