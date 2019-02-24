@@ -127,7 +127,7 @@ const trimLeft = (condition: RegExp) => {
 export default (options: { endpoint: string, absoluteFilePath: string, trimLeftPattern?: RegExp }) => {
     let router = express.Router()
 
-    const afterDefinition = options.trimLeftPattern ? trimLeft(options.trimLeftPattern) : (_: any) => _
+    const afterDefinition = options.trimLeftPattern ? trimLeft(options.trimLeftPattern) : (root: Node) => root
 
     router.get('/:modality/:file', (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const {
