@@ -34,6 +34,7 @@
     "express-hbs": "^2.0.2",
     "fomantic-ui": "^2.7.2",
     "fuse.js": "^3.4.2",
+    "gulp-browserify": "^0.5.1",
     "handlebars": "^4.1.0",
     "lowdb": "^1.0.0",
     "node-html-parser": "^1.1.12",
