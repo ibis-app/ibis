@@ -17,14 +17,8 @@ interface TreatmentListing {
     treatments: Header[]
 }
 
-const allInfo = () => new Promise<TreatmentListing[]>(async (resolve, reject) => {
-    let items: string[];
-
-    try {
-        items = fs.readdirSync(config.paths.tx)
-    } catch (e) {
-        return reject(e)
-    }
+const allInfo = async () => {
+    const items: string[] = fs.readdirSync(config.paths.tx)
 
     const dirs = items.filter(item => fs.statSync(path.join(config.paths.tx, item)).isDirectory())
 
@@ -37,14 +31,15 @@ const allInfo = () => new Promise<TreatmentListing[]>(async (resolve, reject) =>
             });
         });
         const infos = items.map((item: string) => parseHeaderFromFile(path.join(config.paths.tx, dir, item)));
+
         return ({
             modality: dir,
             treatments: await Promise.all(infos)
         });
     }))
 
-    resolve(listing)
-})
+    return listing
+}
 
 router.get('/treatments', (_, res: express.Response) => {
     allInfo().then((treatmentListing) => {
