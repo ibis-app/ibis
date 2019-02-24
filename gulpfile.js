@@ -5,24 +5,27 @@ const glob = require('glob')
 
 const dist = "dist"
 const source = "src"
-const staticAssets = ["**/*.hbs"]
+
+const staticAssets = function (prefix) {
+    return ["**/*.hbs"].map(pattern => `${prefix}/${pattern}`)
+} 
 
 function watchStaticAssets(_cb) {
-    watch(staticAssets, series(cleanStaticAssets, copyStaticAssets))
+    watch(staticAssets(src), series(cleanStaticAssets, copyStaticAssets))
 }
 
 function cleanStaticAssets() {
-    return src(staticAssets.map(pattern => `${dist}/${pattern}`), { read: false })
+    return src(staticAssets(dist), { read: false })
           .pipe(clean())
 }
 
 function copyStaticAssets() {
-    return src(staticAssets.map(pattern => `${source}/${pattern}`))
+    return src(staticAssets(src))
            .pipe(dest(dist))
 }
 
 exports.ls = function (cb) {
-    staticAssets.forEach(pattern => {
+    staticAssets(source).forEach(pattern => {
         glob(pattern, function (err, files) {
             if (err) {
                 return cb(err)
@@ -32,6 +35,7 @@ exports.ls = function (cb) {
     })
     cb()
 }
+
 exports.copy = copyStaticAssets
 exports.clean = cleanStaticAssets
 exports.watch = watchStaticAssets
