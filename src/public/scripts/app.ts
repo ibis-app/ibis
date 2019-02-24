@@ -1,4 +1,4 @@
-// import './reload'
+import './reload'
 import './semantic.api'
 
 declare var $: JQueryStatic
