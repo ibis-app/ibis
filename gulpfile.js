@@ -3,7 +3,7 @@ const { src, dest, watch, series } = require('gulp')
 const clean = require('gulp-clean')
 const glob = require('glob')
 
-const dist = "dist"
+const distributable = "dist"
 const source = "src"
 
 const staticAssets = function (prefix) {
@@ -11,17 +11,17 @@ const staticAssets = function (prefix) {
 } 
 
 function watchStaticAssets(_cb) {
-    watch(staticAssets(src), series(cleanStaticAssets, copyStaticAssets))
+    watch(staticAssets(source), series(cleanStaticAssets, copyStaticAssets))
 }
 
 function cleanStaticAssets() {
-    return src(staticAssets(dist), { read: false })
+    return src(staticAssets(distributable), { read: false })
           .pipe(clean())
 }
 
 function copyStaticAssets() {
     return src(staticAssets(src))
-           .pipe(dest(dist))
+           .pipe(dest(distributable))
 }
 
 exports.ls = function (cb) {
