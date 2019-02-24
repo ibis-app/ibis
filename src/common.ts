@@ -1,10 +1,19 @@
 import './promises'
-import _ from 'lodash'
-import fs from 'fs'
+import { flatten } from 'lodash'
+import { readFileSync } from 'fs'
 import { parse, HTMLElement, TextNode, Node } from 'node-html-parser'
 import { RequestHandler, Request, NextFunction } from 'express'
 
-export const modalities: { [code: string]: { displayName: string } } = {
+export interface Modality {
+    code: string,
+    data: ModalityData
+}
+
+export interface ModalityData {
+    displayName: string
+}
+
+export const modalities: { [code: string]: ModalityData } = {
     'acup': {
         displayName: "Acupuncture"
     },
@@ -37,11 +46,14 @@ export const modalities: { [code: string]: { displayName: string } } = {
     },
 }
 
-export const getModality = (codeOrDisplayName: string) => {
+export const getModality: (a: string) => Modality = (codeOrDisplayName: string) => {
     const lower = codeOrDisplayName.toLowerCase()
 
     if (lower in modalities) {
-        return modalities[lower];
+        return ({ code: lower, data: modalities[lower] });
+    } else {
+        const [code, modality] = Object.entries(modalities).find(([_, modality]) => modality.displayName.toLowerCase() === codeOrDisplayName)
+        return ({ code: code, data: modality })
     }
 }
 
@@ -61,7 +73,7 @@ const possibleNodes = (node: Node) => {
         return []
     }
 
-    return _.flatten(node.childNodes
+    return flatten(node.childNodes
         .map(flattenNode)
         .filter(nodeText => nodeText.every(text => text !== '')))
 }
@@ -71,7 +83,6 @@ export interface Header {
     tag: string,
     name: string,
     category: string
-
 }
 
 export function parseHeaderFromFile(filepath: string): Header {
@@ -79,7 +90,7 @@ export function parseHeaderFromFile(filepath: string): Header {
         throw new Error('undefined filepath')
     }
 
-    const buffer = fs.readFileSync(filepath)
+    const buffer = readFileSync(filepath)
 
     const data = buffer.toString()
 
@@ -120,8 +131,8 @@ export function parseHeader(source: string): string[] {
 
     const interestingNodes: string[] = [].concat(
         possibleNodes(htmlRoot),
-        head,
-        body)
+        possibleNodes(head),
+        possibleNodes(body))
 
     const first = interestingNodes.findIndex(node => versionPattern.test(node))
 

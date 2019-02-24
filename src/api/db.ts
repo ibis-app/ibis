@@ -1,6 +1,6 @@
 import '../promises'
 import express from 'express'
-import { Header, modalities } from '../common'
+import { Header, modalities, getModality, Modality } from '../common'
 import config from './config'
 import fuse from 'fuse.js'
 import { getFileInfo, getListing } from './file';
@@ -10,10 +10,10 @@ import lowdb from 'lowdb'
 
 const adapter = new BetterFileAsync<Database>('db.json', {
     defaultValue: {
-        tx: [],
-        rx: [],
         diseases: [],
-        treatments: []
+        treatments: [],
+        diseaseNames: [],
+        treatmentNames: []
     }
 })
 
@@ -21,30 +21,33 @@ const router = express.Router()
 
 interface Directory {
     filename: string,
+    modality: Modality,
     header: Header
 }
 
 export interface Database {
-    diseases: string[],
-    treatments: string[],
-    tx: Directory[]
-    rx: Directory[]
+    diseaseNames: string[],
+    treatmentNames: string[],
+    diseases: Directory[]
+    treatments: Directory[]
 }
 
-const searchDiseases = (options: fuse.FuseOptions<string> = {
+const searchDiseases = (options: fuse.FuseOptions<Directory> = {
     shouldSort: true,
     includeMatches: true,
     threshold: 0.6,
     location: 0,
     distance: 100,
     maxPatternLength: 32,
-    minMatchCharLength: 1
+    minMatchCharLength: 1,
+    // ah, string indexing...
+    keys: ["header", "header.name"] as any
 }) =>
     async (query: string) => {
         const db = await database()
-        const data = db.get('diseases').value()
+        const data = db.get('tx').value()
         const values = Array.from(data.values())
-        console.log(query, values.length, values)
+        console.log(query, values.length)
         const search = new fuse(values, options)
         return search.search(query)
     }
@@ -58,7 +61,7 @@ const getAllTheMagic = async (abs: string) => await Promise.all(
         const fileInfos = await getFileInfo(abs, modality, listing)
         console.debug("done", abs, modality)
 
-        return fileInfos
+        return fileInfos.map(f => ({ modality: getModality(modality), ...f }))
     }))
 
 
@@ -92,8 +95,8 @@ const initialize = async () => {
 
     db.get('tx').splice(0, 0, ...allListings(txs)).write()
     db.get('rx').splice(0, 0, ...allListings(rxs)).write()
-    db.get('diseases').splice(0, 0, ...getName(txs)).write()
-    db.get('treatments').splice(0, 0, ...getName(rxs)).write()
+    db.get('diseaseNames').splice(0, 0, ...getName(txs)).write()
+    db.get('treatmentNames').splice(0, 0, ...getName(rxs)).write()
     console.log('finished mapping listings')
     // get ALL the files everywhere
     // put them in the diseases/ tx/ rx
