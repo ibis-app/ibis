@@ -1,5 +1,6 @@
 import './reload'
 import './semantic.api'
+import './search_bar'
 
 declare var $: JQueryStatic
 
