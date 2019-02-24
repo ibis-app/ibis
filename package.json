@@ -34,7 +34,6 @@
     "express-hbs": "^2.0.2",
     "fomantic-ui": "^2.7.2",
     "fuse.js": "^3.4.2",
-    "gulp-browserify": "^0.5.1",
     "handlebars": "^4.1.0",
     "lowdb": "^1.0.0",
     "node-html-parser": "^1.1.12",
@@ -62,7 +61,6 @@
     "gulp-clean": "^0.4.0",
     "gulp-debug": "^4.0.0",
     "gulp-newer": "^1.4.0",
-    "nodemon": "^1.18.10",
     "tslint": "^5.13.0",
     "typescript": "^3.3.3333"
   },
