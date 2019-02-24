@@ -12,8 +12,6 @@ const adapter = new BetterFileAsync<Database>('db.json', {
     defaultValue: {
         diseases: [],
         treatments: [],
-        diseaseNames: [],
-        treatmentNames: []
     }
 })
 
@@ -26,11 +24,35 @@ interface Directory {
 }
 
 export interface Database {
-    diseaseNames: string[],
-    treatmentNames: string[],
     diseases: Directory[]
     treatments: Directory[]
 }
+
+function searchOptions<DataType>(options?: fuse.FuseOptions<DataType>): (query: string, data: DataType[]) => DataType[] {
+    return (query, data) => {
+        const values = Array.from(data.values())
+        console.log(query, values.length)
+        const search = new fuse(values, {
+            shouldSort: true,
+            includeMatches: true,
+            threshold: 0.6,
+            location: 0,
+            distance: 100,
+            maxPatternLength: 32,
+            minMatchCharLength: 1,
+            ...options
+        })
+        return search.search(query)
+    }
+}
+
+const searchStrings = searchOptions({
+    
+})
+
+const searchDirectory = searchOptions({
+    keys: ["header", "header.name"] as any
+})
 
 const searchDiseases = (options: fuse.FuseOptions<Directory> = {
     shouldSort: true,
@@ -40,19 +62,17 @@ const searchDiseases = (options: fuse.FuseOptions<Directory> = {
     distance: 100,
     maxPatternLength: 32,
     minMatchCharLength: 1,
-    // ah, string indexing...
-    keys: ["header", "header.name"] as any
 }) =>
     async (query: string) => {
         const db = await database()
-        const data = db.get('tx').value()
+        const data = db.get("treatments").value()
         const values = Array.from(data.values())
         console.log(query, values.length)
         const search = new fuse(values, options)
         return search.search(query)
     }
 
-const s = searchDiseases()
+const s = searchDirectory
 
 const getAllTheMagic = async (abs: string) => await Promise.all(
     Object.keys(modalities).map(async modality => {
@@ -65,12 +85,29 @@ const getAllTheMagic = async (abs: string) => await Promise.all(
     }))
 
 
-router.get('/', async (req, res) => {
-    if (req.query.q) {
-        res.send(await s(req.query.q))
+router.get('/', async (_, res) => {
+    const db = await database()
+    res.send(db.value())
+})
+
+router.get('/:sub', async (req, res) => {
+    const {
+        sub
+    } = req.params
+
+    const db = await database()
+
+    if (!Object.keys(db.value()).includes(sub)) {
+        res.sendStatus(404)
+        return
+    }
+
+    if (!req.query.q) {
+        res.send(db.get(sub).value())
+        return
     } else {
-        const db = await database()
-        res.send(db.value())
+        const values = db.get(sub).value()
+        res.send(await s(req.query.q, values))
     }
 })
 
@@ -80,10 +117,6 @@ function database(): Promise<lowdb.LowdbAsync<Database>> {
 
 function allListings(d: Directory[][]): Directory[] {
     return [].concat(...d)
-}
-
-function getName(d: Directory[][]): string[] {
- return [].concat(...d.map(modality => modality.map(listing => listing.header.name)))
 }
 
 async function initialize() {
@@ -100,10 +133,8 @@ async function initialize() {
     const rxs = await getAllTheMagic(config.relative.ibisRoot('system', 'rx'))
     console.log('got all the magic')
 
-    db.get('treatments').splice(0, 0, ...allListings(txs)).write()
-    db.get('diseases').splice(0, 0, ...allListings(rxs)).write()
-    db.get('diseaseNames').splice(0, 0, ...getName(txs)).write()
-    db.get('treatmentNames').splice(0, 0, ...getName(rxs)).write()
+    db.get('diseases').splice(0, 0, ...allListings(txs)).write()
+    db.get('treatments').splice(0, 0, ...allListings(rxs)).write()
     console.log('finished mapping listings')
     // get ALL the files everywhere
     // put them in the diseases/ tx/ rx
