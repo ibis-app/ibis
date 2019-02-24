@@ -4,10 +4,10 @@ import { Header, modalities } from '../common'
 import config from './config'
 import fuse from 'fuse.js'
 import { getFileInfo, getListing } from './file';
-import FileAsync from 'lowdb/adapters/FileAsync'
-import lowdb, { LowdbAsync } from 'lowdb'
+import { BetterFileAsync } from './BetterFileAsync'
+import lowdb from 'lowdb'
 
-const adapter = new FileAsync<Database>('db.json', {
+const adapter = new BetterFileAsync<Database>('db.json', {
     defaultValue: {
         tx: [],
         rx: [],
