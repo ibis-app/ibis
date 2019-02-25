@@ -9,8 +9,9 @@ const nodeMatches = (condition: RegExp) => (node: Node) => condition.test(node.r
 const childrenContainsDefinitionText = (condition: RegExp) => (node: Node): boolean => node.childNodes.some(nodeMatches(condition))
 const emptyNode = (node: Node) => node.rawText.trim() === ''
 
-export const getFileInfo: (a: string, b: string, l: string[]) => Promise<{ filename: string, header: Header }[]> = (absoluteFilePath: string, modality: string, listing: string[]) => {
+export function getFileInfo(absoluteFilePath: string, modality: string, listing: string[]): Promise<{ filename: string, header: Header }[]> {
     const promises = listing.map(async (filename: string) => ({
+        modality: modality,
         filename: filename.slice(),
         header: parseHeaderFromFile(path.join(absoluteFilePath, modality, filename)),
     }))

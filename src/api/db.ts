@@ -1,7 +1,7 @@
 import '../promises'
 import express from 'express'
 import { Header, modalities, getModality, Modality } from '../common'
-import config from './config'
+import config, { apiHostname } from './config'
 import fuse from 'fuse.js'
 import { getFileInfo, getListing } from './file';
 import BetterFileAsync from './BetterFileAsync'
@@ -18,7 +18,7 @@ const adapter = new BetterFileAsync<Database>('db.json', {
 const router = express.Router()
 
 export interface Directory {
-    filename: string,
+    url: string,
     modality: Modality,
     header: Header
 }
@@ -54,20 +54,31 @@ const searchDirectory = searchOptions<Directory>({
     keys: ["header", "header.name"] as any
 })
 
-const getAllTheMagic = async (abs: string) => await Promise.all(
+async function getAllTheMagic(resourcePrefix: string, abs: string): Promise<Directory[][]> {
+    return await Promise.all(
     Object.keys(modalities).map(async modality => {
         console.debug("getting", abs, modality)
         const listing = await getListing(abs, modality)
         const fileInfos = await getFileInfo(abs, modality, listing)
         console.debug("done", abs, modality)
 
-        return fileInfos.map(f => ({ modality: getModality(modality), ...f }))
+        return fileInfos.map(f => ({ ...f, url: `${resourcePrefix}/${modality}/${f.filename}`, modality: getModality(modality) }))
     }))
+}
 
 
-router.get('/', async (_, res) => {
-    const db = await database()
-    res.send(db.value())
+router.get('/', async (req, res) => {
+    const db = await database();
+
+    if (!req.query.q) {
+        res.send(db.value())
+        return
+    }
+
+    const t = db.get('treatments')
+    const d = db.get('diseases')
+
+    res.send(searchDirectory(req.query.q, [].concat(...t.value(), ...d.value())))
 })
 
 router.get('/:sub', async (req, res) => {
@@ -112,8 +123,8 @@ async function initialize() {
         return
     }
 
-    const txs = await getAllTheMagic(config.relative.ibisRoot('system', 'tx'))
-    const rxs = await getAllTheMagic(config.relative.ibisRoot('system', 'rx'))
+    const txs = await getAllTheMagic(`${apiHostname}/tx`, config.relative.ibisRoot('system', 'tx'))
+    const rxs = await getAllTheMagic(`${apiHostname}/rx`, config.relative.ibisRoot('system', 'rx'))
     console.log('got all the magic')
 
     db.get('diseases').splice(0, 0, ...allListings(txs)).write()

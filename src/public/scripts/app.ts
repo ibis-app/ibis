@@ -21,16 +21,13 @@ $(document).ready(() => {
 
     ($('.ui.search') as any).search({
         apiSettings: {
-            onResponse: (data: { directory: string, results: { item: Directory, matches: any[]}[] }): { results: { title: string, url: string }[]} => {
-                if (!data.results) {
-                    return ({
-                        results: []
-                    })
-                }
+            onResponse: (data: { directory: string, results: { item: Directory, matches: any[]}[] }): { results: { title: string, url: string, category: string }[]} => {
+                const results = data.results || []
                 return ({
-                    results: data.results.map(result => ({ 
+                    results: results.map(result => ({ 
+                        category: result.item.modality.data.displayName,
                         title: result.item.header.name,
-                        url: result.item.filename
+                        url: result.item.url
                     }))
                 })
             }

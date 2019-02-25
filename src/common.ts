@@ -46,7 +46,7 @@ export const modalities: { [code: string]: ModalityData } = {
     },
 }
 
-export const getModality: (a: string) => Modality = (codeOrDisplayName: string) => {
+export function getModality(codeOrDisplayName: string): Modality {
     const lower = codeOrDisplayName.toLowerCase()
 
     if (lower in modalities) {
