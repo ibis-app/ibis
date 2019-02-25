@@ -20,12 +20,21 @@ function interceptClickEvent(e: MouseEvent): any {
 
     if (port === currentPort && hostname === currentHostname) {
         console.log('its local')
-        // e.preventDefault()
+        e.preventDefault()
         axios({
             method: 'GET',
             url: href
         }).then(({ data }) => {
-            console.dir(data)
+            console.log(data)
+            console.log('parsing and replacing')
+            const parser = new DOMParser()
+            const newRoot = parser.parseFromString(data, "text/html")
+            const root = document.documentElement
+            console.log('parsed')
+            console.dir(newRoot)
+            console.dir(root)
+            document.head.replaceWith(newRoot.head.cloneNode(true))
+            document.body.replaceWith(newRoot.body.cloneNode(true))
         })
     }
 }
@@ -33,5 +42,5 @@ function interceptClickEvent(e: MouseEvent): any {
 
 //listen for link click events at the document level
 if (document.addEventListener) {
-    document.addEventListener('click', interceptClickEvent)
+    // document.addEventListener('click', interceptClickEvent)
 }

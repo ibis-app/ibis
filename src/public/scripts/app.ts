@@ -1,6 +1,6 @@
 import './reload'
 import './semantic.api'
-import { Directory } from '../../api/db'
+import { Directory, CategorizedSearchResult, Thing } from '../../api/db'
 import { FuseResult } from 'fuse.js'
 import { Searchable } from 'fomantic-ui'
 
@@ -22,16 +22,27 @@ $(document).ready(() => {
     });
 
     ($('.ui.search') as Searchable).search({
+        type: 'category',
         apiSettings: {
-            onResponse: (data: { directory: string, results: FuseResult<Directory>[]}) => {
-                const results = data.results || []
-                return ({
-                    results: results.map(result => ({ 
-                        category: result.item.modality.data.displayName,
-                        title: result.item.header.name,
-                        url: result.item.url
-                    }))
+            onResponse: (data: CategorizedSearchResult) => {
+                const newData =({
+                    ...data,
+                    results: Object.keys(data.results).reduce((acc: any, category) => {
+                        const d = data.results[category]
+                        acc[category] = ({
+                            ...d,
+                            results: d.results.map(result => ({
+                                category: result.modality.data.displayName,
+                                title: result.header.name,
+                                url: result.url
+                            }))
+                        })
+                        return acc
+                    }, {})
                 })
+
+                console.dir(newData)
+                return newData
             }
         }
     })

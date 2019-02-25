@@ -12,6 +12,7 @@ export interface SearchResult {
 }
 
 export interface SemanticSearchOptions {
+    type?: string,
     apiSettings?: any,
     minCharacters?: number,
     onResponse?: (data: any) => ({ results: SearchResult[] })

@@ -34,7 +34,6 @@ function searchOptions<DataType>(options?: fuse.FuseOptions<DataType>): (query: 
         console.log(query, values.length)
         const search = new fuse(values, {
             shouldSort: true,
-            includeMatches: true,
             threshold: 0.6,
             location: 0,
             distance: 100,
@@ -42,13 +41,15 @@ function searchOptions<DataType>(options?: fuse.FuseOptions<DataType>): (query: 
             minMatchCharLength: 1,
             ...options
         })
-        return search.search(query)
+        const results = search.search(query)
+
+        if ('matches' in (results as any)) {
+            return results as any
+        } else {
+            return results
+        }
     }
 }
-
-const searchStrings = searchOptions<string>({
-    
-})
 
 const searchDirectory = searchOptions<Directory>({
     keys: ["header", "header.name"] as any
@@ -56,14 +57,14 @@ const searchDirectory = searchOptions<Directory>({
 
 async function getAllTheMagic(resourcePrefix: string, abs: string): Promise<Directory[][]> {
     return await Promise.all(
-    Object.keys(modalities).map(async modality => {
-        console.debug("getting", abs, modality)
-        const listing = await getListing(abs, modality)
-        const fileInfos = await getFileInfo(abs, modality, listing)
-        console.debug("done", abs, modality)
+        Object.keys(modalities).map(async modality => {
+            console.debug("getting", abs, modality)
+            const listing = await getListing(abs, modality)
+            const fileInfos = await getFileInfo(abs, modality, listing)
+            console.debug("done", abs, modality)
 
-        return fileInfos.map(f => ({ ...f, url: `${resourcePrefix}/${modality}/${f.filename}`, modality: getModality(modality) }))
-    }))
+            return fileInfos.map(f => ({ ...f, url: `${resourcePrefix}/${modality}/${f.filename}`, modality: getModality(modality) }))
+        }))
 }
 
 
@@ -81,6 +82,50 @@ router.get('/', async (req, res) => {
     res.send(searchDirectory(req.query.q, [].concat(...t.value(), ...d.value())))
 })
 
+export interface SearchResult {
+    directory: string,
+    results: Directory[]
+}
+
+export interface CategorizedSearchResult {
+    directory: string,
+    results: Thing
+}
+
+export interface Thing {
+    [name: string]: {
+        name: string,
+        results: Directory[]
+    }
+}
+
+function formatSearchResponse(directory: string, results: Directory[], categorize: boolean = false): SearchResult | CategorizedSearchResult {
+    if (categorize) {
+        return ({
+            directory: directory,
+            results: (results as Directory[]).reduce((acc: Thing, cur) => {
+                const name = cur.modality.data.displayName
+
+                if (!(name in acc)) {
+                    acc[name] = {
+                        name: name,
+                        results: [cur]
+                    }
+                } else {
+                    acc[name].results.push(cur)
+                }
+
+                return acc
+            }, {})
+        })
+    } else {
+        return ({
+            directory: directory,
+            results: results
+        })
+    }
+}
+
 router.get('/:sub', async (req, res) => {
     const {
         sub
@@ -95,13 +140,10 @@ router.get('/:sub', async (req, res) => {
 
     if (!req.query.q) {
         res.send(db.get(sub).value())
-        return
     } else {
         const values: Directory[] = db.get(sub).value()
-        res.send({
-            directory: sub,
-            results: await searchDirectory(req.query.q, values)
-        })
+        const results = searchDirectory(req.query.q, values)
+        res.send(formatSearchResponse(sub, results as any, true))
     }
 })
 
