@@ -8,10 +8,6 @@ import { parseHeaderFromFile, Header } from '../common';
 
 const router = express.Router()
 
-router.get('/', (_, res: express.Response) => {
-    res.send('tx')
-})
-
 interface TreatmentListing {
     modality: string,
     treatments: Header[]
@@ -47,7 +43,7 @@ router.get('/treatments', (_, res: express.Response) => {
     })
 })
 
-router.use('/file', file({
+router.use('/', file({
     endpoint: 'tx',
     absoluteFilePath: config.relative.ibisRoot('system', 'tx')
 }))

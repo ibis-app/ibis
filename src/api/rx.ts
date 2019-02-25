@@ -4,11 +4,7 @@ import file from './file'
 
 const router = express.Router()
 
-router.get('/', (_, res: express.Response) => {
-    res.send('rx')
-})
-
-router.use('/file', file({
+router.use('/', file({
     endpoint: 'rx',
     absoluteFilePath: config.relative.ibisRoot('system', 'rx'),
     trimLeftPattern: /definition/

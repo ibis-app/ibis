@@ -159,7 +159,7 @@ export default (options: { endpoint: string, absoluteFilePath: string, trimLeftP
         };
     }
 
-    const filepath = (req: express.Request, modality: string, filename: string) => resolved(req, `${options.endpoint}/file/${modality}/${filename}`)
+    const filepath = (req: express.Request, modality: string, filename: string) => resolved(req, `${options.endpoint}/${modality}/${filename}`)
 
     router.get('/:modality/:file/info', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const {
