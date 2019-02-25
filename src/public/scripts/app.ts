@@ -22,6 +22,11 @@ $(document).ready(() => {
     ($('.ui.search') as any).search({
         apiSettings: {
             onResponse: (data: { directory: string, results: { item: Directory, matches: any[]}[] }): { results: { title: string, url: string }[]} => {
+                if (!data.results) {
+                    return ({
+                        results: []
+                    })
+                }
                 return ({
                     results: data.results.map(result => ({ 
                         title: result.item.header.name,
