@@ -34,9 +34,9 @@ function searchOptions<DataType>(options?: fuse.FuseOptions<DataType>): (query: 
         console.log(query, values.length)
         const search = new fuse(values, {
             shouldSort: true,
-            threshold: 0.6,
+            threshold: 0.25,
             location: 0,
-            distance: 100,
+            distance: 50,
             maxPatternLength: 32,
             minMatchCharLength: 1,
             ...options
