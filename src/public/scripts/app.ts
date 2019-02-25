@@ -1,23 +1,34 @@
 import './reload'
 import './semantic.api'
-import { search } from './search_box'
+import { Directory } from '../../api/db'
 
 declare var $: JQueryStatic
 
-$('#modality-menu-toggle').click(() => {
-    let menu: any = $('#modality-menu') as any;
-    if (menu) {
-        menu.sidebar('toggle')
-    }
-});
+$(document).ready(() => {
+    $('#modality-menu-toggle').click(() => {
+        let menu: any = $('#modality-menu') as any;
+        if (menu) {
+            menu.sidebar('toggle')
+        }
+    });
 
-document.querySelectorAll('form.search-box').forEach(element => {
-    element.addEventListener('submit', search)
-});
+    ($('.ui.button.htm-link') as any).api({
+        encodeParameters: false,
+        onSuccess: (data: any) => {
+            console.dir(data)
+        }
+    });
 
-($('.ui.button.htm-link') as any).api({
-    encodeParameters: false,
-    onSuccess: (data: any) => {
-        console.dir(data)
-    }
+    ($('.ui.search') as any).search({
+        apiSettings: {
+            onResponse: (data: { directory: string, results: { item: Directory, matches: any[]}[] }): { results: { title: string, url: string }[]} => {
+                return ({
+                    results: data.results.map(result => ({ 
+                        title: result.item.header.name,
+                        url: result.item.filename
+                    }))
+                })
+            }
+        }
+    })
 })
