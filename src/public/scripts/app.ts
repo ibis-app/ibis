@@ -1,6 +1,8 @@
 import './reload'
 import './semantic.api'
 import { Directory } from '../../api/db'
+import { FuseResult } from 'fuse.js'
+import { Searchable } from 'fomantic-ui'
 
 declare var $: JQueryStatic
 
@@ -19,9 +21,9 @@ $(document).ready(() => {
         }
     });
 
-    ($('.ui.search') as any).search({
+    ($('.ui.search') as Searchable).search({
         apiSettings: {
-            onResponse: (data: { directory: string, results: { item: Directory, matches: any[]}[] }): { results: { title: string, url: string, category: string }[]} => {
+            onResponse: (data: { directory: string, results: FuseResult<Directory>[]}) => {
                 const results = data.results || []
                 return ({
                     results: results.map(result => ({ 
