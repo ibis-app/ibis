@@ -17,7 +17,7 @@ const adapter = new BetterFileAsync<Database>('db.json', {
 
 const router = express.Router()
 
-interface Directory {
+export interface Directory {
     filename: string,
     modality: Modality,
     header: Header
@@ -46,33 +46,13 @@ function searchOptions<DataType>(options?: fuse.FuseOptions<DataType>): (query: 
     }
 }
 
-const searchStrings = searchOptions({
+const searchStrings = searchOptions<string>({
     
 })
 
-const searchDirectory = searchOptions({
+const searchDirectory = searchOptions<Directory>({
     keys: ["header", "header.name"] as any
 })
-
-const searchDiseases = (options: fuse.FuseOptions<Directory> = {
-    shouldSort: true,
-    includeMatches: true,
-    threshold: 0.6,
-    location: 0,
-    distance: 100,
-    maxPatternLength: 32,
-    minMatchCharLength: 1,
-}) =>
-    async (query: string) => {
-        const db = await database()
-        const data = db.get("treatments").value()
-        const values = Array.from(data.values())
-        console.log(query, values.length)
-        const search = new fuse(values, options)
-        return search.search(query)
-    }
-
-const s = searchDirectory
 
 const getAllTheMagic = async (abs: string) => await Promise.all(
     Object.keys(modalities).map(async modality => {
@@ -106,8 +86,11 @@ router.get('/:sub', async (req, res) => {
         res.send(db.get(sub).value())
         return
     } else {
-        const values = db.get(sub).value()
-        res.send(await s(req.query.q, values))
+        const values: Directory[] = db.get(sub).value()
+        res.send({
+            directory: sub,
+            results: await searchDirectory(req.query.q, values)
+        })
     }
 })
 
