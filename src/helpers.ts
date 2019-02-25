@@ -1,11 +1,10 @@
 import exhbs from 'express-hbs'
+import axios from 'axios'
 import fs from 'fs'
 import path from 'path'
-import config from './api/config'
 import { menuItems } from './views'
 import { apiHostname } from './api/config'
 import { modalities } from './common'
-import axios from 'axios'
 
 const readFile = (root: string) => (filename: string, cb: Function) => {
     fs.readFile(path.join(root, filename), 'utf8', function (err, content) {
@@ -78,6 +77,10 @@ exhbs.registerHelper('hostname', (route: any) => {
 
 exhbs.registerHelper('json', (data: any) => {
     return JSON.stringify(data)
+})
+
+exhbs.registerHelper('if_present', (value: any, defaultValue: any) => {
+    return new exhbs.SafeString(value || defaultValue)
 })
 
 const whitespace = /\s+/
