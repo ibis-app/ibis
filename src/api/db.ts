@@ -7,7 +7,6 @@ import { getFileInfo, getListing } from './file';
 import BetterFileAsync from './BetterFileAsync'
 import lowdb from 'lowdb'
 
-
 const adapter = new BetterFileAsync<Database>('db.json', {
     defaultValue: {
         diseases: [],
@@ -15,7 +14,9 @@ const adapter = new BetterFileAsync<Database>('db.json', {
     }
 })
 
-const router = express.Router()
+function database(): Promise<lowdb.LowdbAsync<Database>> {
+    return lowdb(adapter)
+}
 
 export interface Directory {
     url: string,
@@ -55,8 +56,8 @@ const searchDirectory = searchOptions<Directory>({
     keys: ["header", "header.name"] as any
 })
 
-async function getAllTheMagic(resourcePrefix: string, abs: string): Promise<Directory[][]> {
-    return await Promise.all(
+async function getAllListings(resourcePrefix: string, abs: string): Promise<Directory[]> {
+    return ([] as Directory[]).concat(...await Promise.all(
         Object.keys(modalities).map(async modality => {
             console.debug("getting", abs, modality)
             const listing = await getListing(abs, modality)
@@ -64,9 +65,10 @@ async function getAllTheMagic(resourcePrefix: string, abs: string): Promise<Dire
             console.debug("done", abs, modality)
 
             return fileInfos.map(f => ({ ...f, url: `${resourcePrefix}/${modality}/${f.filename}`, modality: getModality(modality) }))
-        }))
+        })))
 }
 
+const router = express.Router()
 
 router.get('/', async (req, res) => {
     const db = await database();
@@ -79,7 +81,7 @@ router.get('/', async (req, res) => {
     const t = db.get('treatments')
     const d = db.get('diseases')
 
-    res.send(searchDirectory(req.query.q, [].concat(...t.value(), ...d.value())))
+    res.send(searchDirectory(req.query.q, ([] as Directory[]).concat(...t.value(), ...d.value())))
 })
 
 export interface SearchResult {
@@ -89,10 +91,10 @@ export interface SearchResult {
 
 export interface CategorizedSearchResult {
     directory: string,
-    results: Thing
+    results: CategorizedSearchMap
 }
 
-export interface Thing {
+export interface CategorizedSearchMap {
     [name: string]: {
         name: string,
         results: Directory[]
@@ -103,7 +105,7 @@ function formatSearchResponse(directory: string, results: Directory[], categoriz
     if (categorize) {
         return ({
             directory: directory,
-            results: (results as Directory[]).reduce((acc: Thing, cur) => {
+            results: (results as Directory[]).reduce<CategorizedSearchMap>((acc, cur) => {
                 const name = cur.modality.data.displayName
 
                 if (!(name in acc)) {
@@ -147,14 +149,6 @@ router.get('/:sub', async (req, res) => {
     }
 })
 
-function database(): Promise<lowdb.LowdbAsync<Database>> {
-    return lowdb(adapter)
-}
-
-function allListings(d: Directory[][]): Directory[] {
-    return [].concat(...d)
-}
-
 async function initialize() {
     const db = await database()
 
@@ -165,12 +159,12 @@ async function initialize() {
         return
     }
 
-    const txs = await getAllTheMagic(`${apiHostname}/tx`, config.relative.ibisRoot('system', 'tx'))
-    const rxs = await getAllTheMagic(`${apiHostname}/rx`, config.relative.ibisRoot('system', 'rx'))
+    const txs = await getAllListings(`${apiHostname}/tx`, config.relative.ibisRoot('system', 'tx'))
+    const rxs = await getAllListings(`${apiHostname}/rx`, config.relative.ibisRoot('system', 'rx'))
     console.log('got all the magic')
 
-    db.get('diseases').splice(0, 0, ...allListings(txs)).write()
-    db.get('treatments').splice(0, 0, ...allListings(rxs)).write()
+    db.get('diseases').splice(0, 0, ...txs).write()
+    db.get('treatments').splice(0, 0, ...rxs).write()
     console.log('finished mapping listings')
     // get ALL the files everywhere
     // put them in the diseases/ tx/ rx

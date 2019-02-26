@@ -1,6 +1,6 @@
 import './reload'
 import './semantic.api'
-import { Directory, CategorizedSearchResult, Thing } from '../../api/db'
+import { Directory, CategorizedSearchResult, CategorizedSearchMap } from '../../api/db'
 import { FuseResult } from 'fuse.js'
 import { Searchable } from 'fomantic-ui'
 
