@@ -1,7 +1,6 @@
 import './reload'
 import './semantic.api'
-import { Directory, CategorizedSearchResult, CategorizedSearchMap } from '../../api/db'
-import { FuseResult } from 'fuse.js'
+import { CategorizedSearchResult } from '../../api/db'
 import { Searchable } from 'fomantic-ui'
 
 declare var $: JQueryStatic
