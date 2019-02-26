@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/benjspriggs/ibis#readme",
   "dependencies": {
+    "ava": "^1.2.1",
     "axios": "^0.18.0",
     "bluebird": "^3.5.3",
     "cors": "^2.8.5",
