@@ -29,6 +29,33 @@ export interface Database {
     treatments: Directory[]
 }
 
+export interface Query {
+    text: string,
+    modality?: string
+}
+
+const modalityPattern = /m(?:odality)?:(['"]?.*['"]?)/g
+
+export function query(text: string): Query {
+    const result: Query = {
+        text: text
+    }
+
+    try {
+        const matches = modalityPattern.exec(text)
+
+        console.dir(text, matches)
+
+        if (matches && matches.length == 2) {
+            result.modality = matches[1]
+        }
+    } catch (_) {
+
+    }
+
+    return result
+}
+
 function searchOptions<DataType>(options?: fuse.FuseOptions<DataType>): (query: string, data: DataType[]) => DataType[] {
     return (query, data) => {
         const values = Array.from(data.values())
