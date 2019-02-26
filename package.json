@@ -9,6 +9,7 @@
     "watch:app": "nodemon dist/index.js",
     "watch:api": "nodemon dist/api/index.js",
     "build": "tsc",
+    "test": "npm run build && ava",
     "watch:ts": "tsc -w",
     "watch:copy": "gulp watch",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
@@ -70,5 +71,12 @@
     "ignore": [
       "db.json"
     ]
+  },
+  "ava": {
+    "files": [
+      "dist/**/*.test.js"
+    ],
+    "cache": true,
+    "failFast": true
   }
 }
