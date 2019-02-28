@@ -113,11 +113,13 @@ router.get('/', async (req, res) => {
 })
 
 export interface SearchResult {
+    query: string,
     directory: string,
     results: Directory[]
 }
 
 export interface CategorizedSearchResult {
+    query: string,
     directory: string,
     results: CategorizedSearchMap
 }
@@ -129,9 +131,10 @@ export interface CategorizedSearchMap {
     }
 }
 
-function formatSearchResponse(directory: string, results: Directory[], categorize: boolean = false): SearchResult | CategorizedSearchResult {
+function formatSearchResponse(query: string, directory: string, results: Directory[], categorize: boolean = false): SearchResult | CategorizedSearchResult {
     if (categorize) {
         return ({
+            query: query,
             directory: directory,
             results: (results as Directory[]).reduce<CategorizedSearchMap>((acc, cur) => {
                 const name = cur.modality.data.displayName
@@ -150,6 +153,7 @@ function formatSearchResponse(directory: string, results: Directory[], categoriz
         })
     } else {
         return ({
+            query: query,
             directory: directory,
             results: results
         })
@@ -176,11 +180,11 @@ router.get('/:sub', async (req, res) => {
     const _categorize = typeof categorize === 'undefined' ? false : categorize === 'true';
 
     if (!q) {
-        res.send(formatSearchResponse(sub, db.get(sub).value(), _categorize));
+        res.send(formatSearchResponse(q, sub, db.get(sub).value(), _categorize));
     } else {
         const values: Directory[] = db.get(sub).value()
         const results = searchDirectory(req.query.q, values)
-        res.send(formatSearchResponse(sub, results, _categorize))
+        res.send(formatSearchResponse(q, sub, results, _categorize))
     }
 })
 
