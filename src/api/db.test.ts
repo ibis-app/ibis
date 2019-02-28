@@ -1,6 +1,6 @@
 import test from 'ava'
 import request from 'supertest'
-import db, { query, SearchResult } from './db'
+import db, { query, SearchResult, CategorizedSearchResult } from './db'
 import bodyparser from 'body-parser'
 import express from 'express'
 
@@ -45,6 +45,50 @@ test('db:app:/treatments', async t => {
 
     t.is(res.status, 200)
     t.is((res.body as SearchResult).directory, "treatments")
+})
+
+test('db:app:/treatments:categorized', async t => {
+    t.plan(2)
+
+    const res = await request(getApp()).get('/treatments?categorize=true')
+
+    t.is(res.status, 200)
+    t.false(Array.isArray(res.body.results))
+})
+
+test('db:app:/diseases:categorized', async t => {
+    t.plan(2)
+
+    const res = await request(getApp()).get('/diseases?categorize=true')
+
+    t.is(res.status, 200)
+    t.false(Array.isArray(res.body.results))
+})
+
+test('db:app:/treatments:not categorized', async t => {
+    t.plan(2)
+
+    const res = await request(getApp()).get('/treatments?categorize=false')
+
+    t.is(res.status, 200)
+    t.true(Array.isArray(res.body.results))
+})
+
+test('db:app:/diseases:not categorized', async t => {
+    t.plan(2)
+
+    const res = await request(getApp()).get('/diseases?categorize=false')
+
+    t.is(res.status, 200)
+    t.true(Array.isArray(res.body.results))
+})
+
+test('db:app:/foobar', async t => {
+    t.plan(1)
+
+    const res = await request(getApp()).get('/foobar')
+
+    t.is(res.status, 404)
 })
 
 test('db:query:modality', t => {
