@@ -1,13 +1,39 @@
 import test from 'ava'
-import { query } from './db'
+import request from 'supertest'
+import db, { query } from './db'
+import bodyparser from 'body-parser'
+import express from 'express'
 
-test('queries', t => {
+const getApp = () => {
+    const app = express()
+    app.use(bodyparser.json())
+    app.use('/', db)
+    return app
+}
+
+test('db:app:/', async t => {
+    t.plan(2)
+
+    const res = await request(getApp()).get('/')
+
+    t.is(res.status, 200)
+    t.not(res.body, undefined)
+})
+
+test('db:app:/:query', async t => {
+    t.plan(2)
+
+    const res = await request(getApp()).get('/?q=string')
+
+    t.is(res.status, 200)
+    t.not(res.body, undefined)
+})
+
+test('db:query:modality', t => {
     t.deepEqual(query('foobar'), {
         text: 'foobar'
     })
-})
 
-test('query modality', t => {
     t.deepEqual(query('term modality:bota'), {
         text: 'term modality:bota',
         modality: 'bota'

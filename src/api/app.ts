@@ -2,11 +2,13 @@ import '../promises'
 import express from 'express'
 import rx from './rx'
 import tx from './tx'
-import db from './db'
+import db, { initialize as dbInitialize } from './db'
 import { requestLogger, modalities } from '../common'
 import cors from 'cors'
 
 var app = express()
+
+export const initialize = dbInitialize
 
 app.use(cors())
 

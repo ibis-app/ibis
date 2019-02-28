@@ -9,7 +9,7 @@
     "watch:app": "nodemon dist/index.js",
     "watch:api": "nodemon dist/api/index.js",
     "build": "tsc",
-    "test": "npm run build && ava",
+    "test": "npm run build && ava | tap-dot",
     "watch:ts": "tsc -w",
     "watch:copy": "gulp watch",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
@@ -30,7 +30,6 @@
   "dependencies": {
     "ava": "^1.2.1",
     "axios": "^0.18.0",
-    "bluebird": "^3.5.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-hbs": "^2.0.2",
@@ -43,8 +42,6 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
-    "@types/bluebird": "^3.5.25",
-    "@types/bluebird-global": "^3.5.10",
     "@types/browserify": "^12.0.36",
     "@types/cors": "^2.8.4",
     "@types/express": "^4.16.1",
@@ -56,13 +53,17 @@
     "@types/lowdb": "^1.0.6",
     "@types/pify": "^3.0.2",
     "@types/shelljs": "^0.8.2",
+    "@types/supertest": "^2.0.7",
     "@types/write-file-atomic": "^2.1.1",
+    "body-parser": "^1.18.3",
     "browserify": "^16.2.3",
     "concurrently": "^4.1.0",
     "gulp": "^4.0.0",
     "gulp-clean": "^0.4.0",
     "gulp-debug": "^4.0.0",
     "gulp-newer": "^1.4.0",
+    "supertest": "^3.4.2",
+    "tap-dot": "^2.0.0",
     "tslint": "^5.13.0",
     "typescript": "^3.3.3333"
   },
@@ -76,8 +77,6 @@
     "files": [
       "dist/**/*.test.js"
     ],
-    "cache": true,
-    "failFast": true,
-    "verbose": true
+    "tap": true
   }
 }

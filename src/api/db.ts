@@ -59,7 +59,7 @@ export function query(text: string): Query {
 function searchOptions<DataType>(options?: fuse.FuseOptions<DataType>): (query: string, data: DataType[]) => DataType[] {
     return (query, data) => {
         const values = Array.from(data.values())
-        console.log(query, values.length)
+
         const search = new fuse(values, {
             shouldSort: true,
             threshold: 0.25,
@@ -69,6 +69,7 @@ function searchOptions<DataType>(options?: fuse.FuseOptions<DataType>): (query: 
             minMatchCharLength: 1,
             ...options
         })
+
         const results = search.search(query)
 
         if ('matches' in (results as any)) {
@@ -176,29 +177,25 @@ router.get('/:sub', async (req, res) => {
     }
 })
 
-async function initialize() {
+export async function initialize() {
     const db = await database()
 
-    console.log('initializing')
+    console.debug('initializing')
 
     if (db.get('treatments').value().length !== 0) {
-        console.log('we done')
+        console.debug('we done')
         return
     }
 
     const txs = await getAllListings(`${apiHostname}/tx`, config.relative.ibisRoot('system', 'tx'))
     const rxs = await getAllListings(`${apiHostname}/rx`, config.relative.ibisRoot('system', 'rx'))
-    console.log('got all the magic')
+    console.debug('got all the magic')
 
     db.get('diseases').splice(0, 0, ...txs).write()
     db.get('treatments').splice(0, 0, ...rxs).write()
-    console.log('finished mapping listings')
+    console.debug('finished mapping listings')
     // get ALL the files everywhere
     // put them in the diseases/ tx/ rx
 }
-
-(async () => {
-    await initialize()
-})().catch(console.error)
 
 export default router
