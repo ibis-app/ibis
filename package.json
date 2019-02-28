@@ -9,7 +9,7 @@
     "watch:app": "nodemon dist/index.js",
     "watch:api": "nodemon dist/api/index.js",
     "build": "tsc",
-    "test": "npm run build && ava | tap-dot",
+    "test": "npm run build && ava",
     "watch:ts": "tsc -w",
     "watch:copy": "gulp watch",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
@@ -63,7 +63,6 @@
     "gulp-debug": "^4.0.0",
     "gulp-newer": "^1.4.0",
     "supertest": "^3.4.2",
-    "tap-dot": "^2.0.0",
     "tslint": "^5.13.0",
     "typescript": "^3.3.3333"
   },
@@ -76,7 +75,6 @@
   "ava": {
     "files": [
       "dist/**/*.test.js"
-    ],
-    "tap": true
+    ]
   }
 }
