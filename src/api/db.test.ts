@@ -1,6 +1,6 @@
 import test from 'ava'
 import request from 'supertest'
-import db, { query, SearchResult, CategorizedSearchResult } from './db'
+import db, { query, SearchResult } from './db'
 import bodyparser from 'body-parser'
 import express from 'express'
 
