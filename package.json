@@ -13,7 +13,7 @@
     "watch:ts": "tsc -w",
     "watch:copy": "gulp watch",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "watch": "concurrently --kill-others \"npm:watch:ts\" \"npm:watch:api\" \"npm:watch:app\" \"npm:watch:copy\"",
+    "watch": "npm run build:copy && concurrently --kill-others \"npm:watch:ts\" \"npm:watch:api\" \"npm:watch:app\" \"npm:watch:copy\"",
     "build:copy": "gulp copy",
     "build:bundle": "browserify dist/public/scripts/app.js > dist/public/scripts/main.js"
   },
