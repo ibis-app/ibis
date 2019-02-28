@@ -168,12 +168,19 @@ router.get('/:sub', async (req, res) => {
         return
     }
 
-    if (!req.query.q) {
-        res.send(db.get(sub).value())
+    const {
+        q,
+        categorize
+    } = req.query
+
+    const _categorize = typeof categorize === 'undefined' ? false : categorize === 'true';
+
+    if (!q) {
+        res.send(formatSearchResponse(sub, db.get(sub).value(), _categorize));
     } else {
         const values: Directory[] = db.get(sub).value()
         const results = searchDirectory(req.query.q, values)
-        res.send(formatSearchResponse(sub, results, true))
+        res.send(formatSearchResponse(sub, results, _categorize))
     }
 })
 
