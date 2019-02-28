@@ -34,23 +34,23 @@ export interface Query {
     modality?: string
 }
 
-const modalityPattern = /m(?:odality)?:(['"]?.*['"]?)/g
+const modalityPattern = /m(?:odality)?:(\w+|'.*?'|".*?")/g
 
 export function query(text: string): Query {
     const result: Query = {
         text: text
     }
 
-    try {
-        const matches = modalityPattern.exec(text)
+    const matches = text.match(modalityPattern)
 
-        console.dir(text, matches)
-
-        if (matches && matches.length == 2) {
-            result.modality = matches[1]
+    if (matches !== null) {
+        if (matches.length > 1) {
+            throw new Error("multiple modality codes not allowed")
         }
-    } catch (_) {
 
+        const matchedModality = modalityPattern.exec(text)[1]
+
+        result.modality = matchedModality.replace(/['"]/g, '')
     }
 
     return result
@@ -172,7 +172,7 @@ router.get('/:sub', async (req, res) => {
     } else {
         const values: Directory[] = db.get(sub).value()
         const results = searchDirectory(req.query.q, values)
-        res.send(formatSearchResponse(sub, results as any, true))
+        res.send(formatSearchResponse(sub, results, true))
     }
 })
 

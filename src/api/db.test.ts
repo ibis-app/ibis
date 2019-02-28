@@ -39,4 +39,9 @@ test('query modality', t => {
         text: "term m:'string modality' word",
         modality: 'string modality'
     }, "it doesn't capture words after quotes")
+
+    t.deepEqual(query('term m:"string modality" word'), {
+        text: 'term m:"string modality" word',
+        modality: 'string modality'
+    }, "it doesn't capture words after quotes")
 })
