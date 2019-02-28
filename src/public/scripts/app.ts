@@ -1,6 +1,6 @@
 import './reload'
 import './semantic.api'
-import { CategorizedSearchResult } from '../../api/db'
+import { CategorizedSearchResult, SearchResult } from '../../api/db'
 import { Searchable } from 'fomantic-ui'
 
 declare var $: JQueryStatic
@@ -21,10 +21,26 @@ $(document).ready(() => {
     });
 
     ($('.ui.search') as Searchable).search({
+        apiSettings: {
+            onResponse: (data: SearchResult) => {
+                return ({
+                    ...data,
+                    results: data.results.map(result => ({
+                        ...result,
+                        category: result.modality.data.displayName,
+                        title: result.header.name,
+                        url: result.url
+                    }))
+                })
+            }
+        }
+    });
+
+    ($('.ui.search.categorize') as Searchable).search({
         type: 'category',
         apiSettings: {
             onResponse: (data: CategorizedSearchResult) => {
-                const newData =({
+                return ({
                     ...data,
                     results: Object.keys(data.results).reduce((acc: any, category) => {
                         const d = data.results[category]
@@ -39,10 +55,7 @@ $(document).ready(() => {
                         return acc
                     }, {})
                 })
-
-                console.dir(newData)
-                return newData
             }
         }
-    })
+    });
 })
