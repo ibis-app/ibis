@@ -1,6 +1,6 @@
 import test from 'ava'
 import request from 'supertest'
-import db, { query } from './db'
+import db, { query, SearchResult } from './db'
 import bodyparser from 'body-parser'
 import express from 'express'
 
@@ -27,6 +27,24 @@ test('db:app:/:query', async t => {
 
     t.is(res.status, 200)
     t.not(res.body, undefined)
+})
+
+test('db:app:/diseases', async t => {
+    t.plan(2)
+
+    const res = await request(getApp()).get('/diseases')
+
+    t.is(res.status, 200)
+    t.is((res.body as SearchResult).directory, "diseases")
+})
+
+test('db:app:/treatments', async t => {
+    t.plan(2)
+
+    const res = await request(getApp()).get('/treatments')
+
+    t.is(res.status, 200)
+    t.is((res.body as SearchResult).directory, "treatments")
 })
 
 test('db:query:modality', t => {
