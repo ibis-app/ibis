@@ -5,6 +5,10 @@
   "bin": "dist/index.js",
   "scripts": {
     "start": "concurrently --kill-others \"npm:start:api\" \"npm:start:app\"",
+    "install": "npm run install:lib && npm run install:api && npm run install:app",
+    "install:lib": "cd lib && npm install",
+    "install:api": "cd api && npm install",
+    "install:app": "cd app && npm install",
     "start:api": "cd api && npm run start",
     "start:app": "cd app && npm run start",
     "watch:app": "cd app && npm run serve",
@@ -13,10 +17,9 @@
     "build:api": "cd api && npm run build",
     "build:app": "cd app && npm run build",
     "build:lib": "cd lib && npm run build",
-    "test": "concurrently \"npm:test:lib\" \"npm:test:api\" \"npm:test:app\"",
+    "test": "concurrently \"npm:test:api\" \"npm:test:app\"",
     "test:api": "cd api && npm run test",
     "test:app": "cd app && npm run test",
-    "test:lib": "cd lib && npm run test",
     "watch": "npm run build:copy && concurrently --kill-others \"npm:watch:ts\" \"npm:watch:api\" \"npm:watch:app\"",
     "watch:ts": "tsc -w",
     "pkg": "concurrently \"npm:pkg:api\" \"npm:pkg:app\"",
@@ -40,6 +43,7 @@
   "devDependencies": {
     "ava": "^1.4.1",
     "concurrently": "^4.1.0",
+    "husky": "^1.3.1",
     "tslint": "^5.13.1",
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.3.3333"
