@@ -10,10 +10,8 @@ interface IConfig {
         tx: string;
     };
     relative: {
-        applicationRoot: (...folders: string[]) => string;
         ibisRoot: (...folders: string[]) => string;
     };
 }
 declare const config: IConfig;
 export default config;
-//# sourceMappingURL=config.d.ts.map

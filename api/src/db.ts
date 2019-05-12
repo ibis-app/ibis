@@ -4,7 +4,7 @@ import config, { apiHostname } from "./config"
 import { getFileInfo, getListing } from "./file";
 
 import BetterFileAsync from "./BetterFileAsync"
-import express from "express"
+import { default as express, Router } from "express"
 import fuse from "fuse.js"
 import lowdb from "lowdb"
 
@@ -93,7 +93,16 @@ async function getAllListings(resourcePrefix: string, abs: string): Promise<Dire
     return ([] as Directory[]).concat(...await Promise.all(
         Object.keys(modalities).map(async modality => {
             console.debug("getting", abs, modality)
-            const listing = await getListing(abs, modality)
+
+            let listing: string[];
+
+            try {
+                listing = await getListing(abs, modality)
+            } catch (err) {
+                modality = modality.toUpperCase();
+                listing = await getListing(abs, modality)
+            }
+
             const fileInfos = await getFileInfo(abs, modality, listing)
             console.debug("done", abs, modality)
 
@@ -101,7 +110,7 @@ async function getAllListings(resourcePrefix: string, abs: string): Promise<Dire
         })))
 }
 
-const router = express.Router()
+const router: Router = express.Router()
 
 router.get("/", async (req, res) => {
     const db = await database();

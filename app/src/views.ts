@@ -1,5 +1,5 @@
 import { exhbs } from "./helpers"
-import express from "express"
+import { default as express, Application } from "express"
 import { Options } from "express-hbs"
 import { fetchFromAPI } from "./helpers"
 import { modalities } from "./common"
@@ -8,14 +8,17 @@ import assets from "./assets"
 import { requestLogger } from "./common"
 import { join } from "path"
 import { paths } from "./config"
+import { getModality } from "ibis-lib";
 
-const app = express()
+const app: Application = express()
+
+const noSuchRoute = (params: any) => new Error(`no such route for: '${JSON.stringify(params)}'`)
 
 app.use(cors())
 
 app.use(requestLogger)
 
-app.use("/assets/", assets)
+app.use("/assets", assets)
 
 const hbsConfig: Options = {
     "defaultLayout": join(paths.root, "views/layouts/default"),
@@ -91,9 +94,9 @@ app.get("/:route", (req: express.Request, res: express.Response, next: express.N
     }
 
     if (item.endpoint) {
-        fetchFromAPI(item.endpoint).then((response) => {
-            if (response) {
-                res.render(route, ({ ...item, data: response }))
+        fetchFromAPI(item.endpoint).then((data) => {
+            if (data) {
+                res.render(route, ({ ...item, data: data }))
             } else {
                 res.render("error")
             }
@@ -112,16 +115,22 @@ app.get("/:route/:modality_code", (req, res, next) => {
     const item = getMenuItemBy.destination(route)
 
     if (!item) {
-        return next(new Error("no such route" + route))
+        return next(noSuchRoute(req.params))
     }
 
-    fetchFromAPI(`${item.route}/${modality_code}`).then((response) => {
-        if (response) {
+    const modality = getModality(modality_code)
+
+    if (!modality) {
+        return next(noSuchRoute(modality_code))
+    }
+
+    fetchFromAPI(`${item.route}/${modality_code}`).then((data) => {
+        if (data) {
             res.render("listing", {
-                title: modalities[modality_code].displayName,
+                title: modality.data.displayName,
                 needs_modalities: true,
                 route: route,
-                data: response.data
+                data: data
             })
         } else {
             res.render("error")
@@ -143,19 +152,24 @@ app.get("/:route/:modality_code/:resource", (req, res, next) => {
     const item = getMenuItemBy.destination(route)
 
     if (!item) {
-        return next(new Error("no such route" + route))
+        return next(noSuchRoute(req.params))
     }
 
-    fetchFromAPI(`${item.route}/${modality_code}/${resource}`).then((response) => {
-        if (!response) {
+    const modality = getModality(modality_code)
+
+    if (!modality) {
+        return next(noSuchRoute(modality_code))
+    }
+
+    fetchFromAPI(`${item.route}/${modality_code}/${resource}`).then((data) => {
+        if (!data) {
             res.render("error")
             return
         }
 
         // TODO: add type safety to API routes
-        const data = response.data
         res.render("single", {
-            title: `${modalities[modality_code].displayName} - ${data.name}`,
+            title: `${modality.data.displayName} - ${data.name}`,
             needs_modalities: true,
             route: route,
             data: data

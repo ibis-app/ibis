@@ -1,6 +1,6 @@
 import { apiHostname } from "ibis-api"
-import axios from "axios"
 import exhbs from "express-hbs"
+import fetch from "node-fetch"
 import { menuItems } from "./views"
 import { modalities } from "./common"
 import { paths } from "./config"
@@ -14,10 +14,20 @@ const menuLayoutPath = join(paths.views, "partials/menu")
 
 export const fetchFromAPI = (endpoint: string) => {
     const absolutePath = `${apiHostname}/${endpoint}`
-    return axios.get(absolutePath)
-        .catch((err) => {
-            console.error(`api err on endpoint ${endpoint}/'${err.request.path}': ${err.response}`)
-        })
+    return fetch(absolutePath, {
+        method: 'GET',
+        compress: true
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+
+        return response.json();
+    }, err => {
+        console.error(`api err on endpoint ${endpoint}: ${err.toString()}`)
+        throw err;
+    });
 };
 
 exhbs.registerHelper("modalities", () => {
@@ -54,14 +64,16 @@ exhbs.registerAsyncHelper("ibis_file", (info: any, cb: Function) => {
     fetchFromAPI(info.filepath.relative).then((data) => {
         cb(data)
     })
+    .catch(() => cb())
 })
 
 exhbs.registerAsyncHelper("api", (context: any, cb: Function) => {
-    fetchFromAPI(context.hash.endpoint).then((response) =>  {
-        if (response) {
-            cb(new exhbs.SafeString(response.data))
+    fetchFromAPI(context.hash.endpoint).then((data) =>  {
+        if (data) {
+            cb(new exhbs.SafeString(data))
         }
     })
+    .catch(() => cb())
 })
 
 exhbs.registerHelper("hostname", (route: any) => {

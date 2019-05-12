@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var node_html_parser_1 = require("node-html-parser");
-var lodash_1 = require("lodash");
-var fs_1 = require("fs");
+const node_html_parser_1 = require("node-html-parser");
+const lodash_1 = require("lodash");
+const fs_1 = require("fs");
 exports.modalities = {
     "acup": {
         displayName: "Acupuncture"
@@ -36,46 +36,43 @@ exports.modalities = {
     },
 };
 function getModality(codeOrDisplayName) {
-    var lower = codeOrDisplayName.toLowerCase();
+    const lower = codeOrDisplayName.toLowerCase();
     if (lower in exports.modalities) {
         return ({ code: lower, data: exports.modalities[lower] });
     }
     else {
-        var _a = Object.entries(exports.modalities).find(function (_a) {
-            var _ = _a[0], modality = _a[1];
-            return modality.displayName.toLowerCase() === codeOrDisplayName;
-        }), code = _a[0], modality = _a[1];
+        const [code, modality] = Object.entries(exports.modalities).find(([_, modality]) => modality.displayName.toLowerCase() === codeOrDisplayName);
         return ({ code: code, data: modality });
     }
 }
 exports.getModality = getModality;
-var flattenNode = function (node) {
+const flattenNode = (node) => {
     if (node instanceof node_html_parser_1.TextNode) {
         return [node.rawText.trim()];
     }
     else if (node instanceof node_html_parser_1.HTMLElement) {
         if (node.childNodes[0] instanceof node_html_parser_1.TextNode) {
-            return node.childNodes.slice(0, 10).map(function (n) { return n.rawText.trim(); });
+            return node.childNodes.slice(0, 10).map(n => n.rawText.trim());
         }
     }
     return [];
 };
-var possibleNodes = function (node) {
+const possibleNodes = (node) => {
     if (!node) {
         return [];
     }
     return lodash_1.flatten(node.childNodes
         .map(flattenNode)
-        .filter(function (nodeText) { return nodeText.every(function (text) { return text !== ""; }); }));
+        .filter(nodeText => nodeText.every(text => text !== "")));
 };
 function parseHeaderFromFile(filepath) {
     if (typeof filepath === "undefined") {
         throw new Error("undefined filepath");
     }
-    var buffer = fs_1.readFileSync(filepath);
-    var data = buffer.toString();
-    var interestingNode = parseHeader(data);
-    var version = interestingNode[0], _ = interestingNode[1], tag = interestingNode[2], name = interestingNode[3], category = interestingNode[4];
+    const buffer = fs_1.readFileSync(filepath);
+    const data = buffer.toString();
+    const interestingNode = parseHeader(data);
+    const [version, _, tag, name, category] = interestingNode;
     return ({
         version: version,
         tag: tag,
@@ -84,26 +81,26 @@ function parseHeaderFromFile(filepath) {
     });
 }
 exports.parseHeaderFromFile = parseHeaderFromFile;
-var versionPattern = /^-IBIS-(\d+)\.(\d+)\.(\d+)-$/;
+const versionPattern = /^-IBIS-(\d+)\.(\d+)\.(\d+)-$/;
 // TODO: this doesn't reliably parse the headers for most files
 // @bspriggs investigate
 function parseHeader(source) {
-    var root = node_html_parser_1.parse(source, { noFix: false, lowerCaseTagName: false });
-    var htmlRoot = root.childNodes
-        .find(function (node) { return node instanceof node_html_parser_1.HTMLElement; });
+    const root = node_html_parser_1.parse(source, { noFix: false, lowerCaseTagName: false });
+    const htmlRoot = root.childNodes
+        .find(node => node instanceof node_html_parser_1.HTMLElement);
     if (!htmlRoot) {
         return [];
     }
-    var head = htmlRoot.querySelector("HEAD");
-    var body = htmlRoot.querySelector("BODY");
-    var interestingNodes = [].concat(possibleNodes(htmlRoot), possibleNodes(head), possibleNodes(body));
-    var first = interestingNodes.findIndex(function (node) { return versionPattern.test(node); });
+    const head = htmlRoot.querySelector("HEAD");
+    const body = htmlRoot.querySelector("BODY");
+    const interestingNodes = [].concat(possibleNodes(htmlRoot), possibleNodes(head), possibleNodes(body));
+    const first = interestingNodes.findIndex(node => versionPattern.test(node));
     // console.log(first)
     // console.dir(interestingNodes)
-    return interestingNodes.slice(first, first + 5).map(function (s) { return s.slice(); });
+    return interestingNodes.slice(first, first + 5).map(s => s.slice());
 }
 exports.parseHeader = parseHeader;
-exports.requestLogger = function (req, _, next) {
+exports.requestLogger = (req, _, next) => {
     console.log(JSON.stringify({
         date: new Date(),
         path: req.path,
@@ -112,4 +109,5 @@ exports.requestLogger = function (req, _, next) {
     }));
     next();
 };
+
 //# sourceMappingURL=common.js.map

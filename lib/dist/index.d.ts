@@ -23,5 +23,7 @@ export declare const requestLogger: RequestHandler;
  * See https://www.npmjs.com/package/pkg#snapshot-filesystem
  */
 export declare function isPackaged(): boolean;
-export declare const applicationRoot: string;
-//# sourceMappingURL=index.d.ts.map
+export declare const applicationRoot: {
+    packaged: string;
+    live: string;
+};
