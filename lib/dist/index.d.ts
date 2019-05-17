@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+export { h2, isHttpsEnabled } from "./server";
 export interface Modality {
     code: string;
     data: ModalityData;

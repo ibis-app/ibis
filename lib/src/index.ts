@@ -5,6 +5,11 @@ import { flatten } from "lodash"
 import { join, dirname } from "path"
 import { readFileSync } from "fs"
 
+export {
+    h2,
+    isHttpsEnabled
+} from "./server"
+
 export interface Modality {
     code: string,
     data: ModalityData
@@ -143,6 +148,9 @@ export function parseHeader(source: string): string[] {
 export const requestLogger: RequestHandler = (req: Request, _, next: NextFunction) => {
     console.log(JSON.stringify(
         {
+            host: req.hostname,
+            version: req.httpVersion,
+            ip: req.ip,
             date: new Date(),
             path: req.path,
             query: req.query,

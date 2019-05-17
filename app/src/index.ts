@@ -1,7 +1,10 @@
 import { appHostname, hostname, port } from "./config"
+import { h2 } from "ibis-lib"
 
 import app from "./app"
 
-app.listen(port, hostname, () => {
-    console.log(`Listening on ${appHostname}`)
-})
+h2(app)
+        .then(server => {
+                console.log(`Listening on ${appHostname}`)
+                server.listen(port, hostname)
+        })
