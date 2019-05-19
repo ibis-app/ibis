@@ -1,0 +1,31 @@
+{
+  "name": "ibis-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/start.js",
+    "test": "ava --tap",
+    "build": "tsc --project tsconfig.json && tsc --project tsconfig.js.json",
+    "pkg": "pkg dist/start.js --out-path dist",
+    "lint": "tslint --project . -t verbose"
+  },
+  "author": "Ben Spriggs",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "fuse.js": "^3.4.2",
+    "ibis-lib": "file:../ibis-lib",
+    "lowdb": "^1.0.0",
+    "node-html-parser": "^1.1.12",
+    "write-file-atomic": "^2.4.2"
+  },
+  "pkg": {
+    "scripts": [
+      "dist/*.js",
+      "!dist/*.test.js"
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "ibis-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "test": "ava --tap",
+    "build": "gulp && npm run build:browser",
+    "build:browser": "rollup --config ./src/public/rollup.config.js",
+    "pkg": "pkg dist/index.js --out-path dist",
+    "lint": "tslint --project . -t verbose"
+  },
+  "author": "Ben Spriggs",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "express-hbs": "^2.1.2",
+    "got": "^9.6.0",
+    "handlebars": "^4.1.2",
+    "ibis-api": "file:../ibis-api",
+    "ibis-lib": "file:../ibis-lib",
+    "node-html-parser": "^1.1.15"
+  },
+  "pkg": {
+    "assets": [
+      "dist/views/**/*",
+      "dist/public/**/*",
+      "dist/semantic/**/*"
+    ],
+    "scripts": [
+      "dist/*.js"
+    ]
+  },
+  "devDependencies": {
+    "fomantic-ui": "^2.7.5"
+  }
+}

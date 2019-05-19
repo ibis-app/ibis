@@ -1,10 +1,13 @@
 IBIS-Mac*
 node_modules/
-app/semantic/dist/*
+dist/
+packages/ibis-app/semantic/dist/*
 data/
 db.json
-ibis-*
+ibis-app-*
+ibis-api-*
 .rpt2_cache/
 *.key
 *.crt
 *.pem
+*.log
