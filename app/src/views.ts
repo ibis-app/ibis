@@ -44,8 +44,9 @@ export const menuItems: {
     route?: string
 }[] = [
         {
-            destination: "",
-            title: "Home"
+            destination: "home",
+            title: "Home",
+            route: "/"
         },
         {
             destination: "therapeutics",
@@ -60,10 +61,6 @@ export const menuItems: {
             route: "rx"
         },
         {
-            destination: "contact",
-            title: "Contact"
-        },
-        {
             destination: "https://github.com/benjspriggs/ibis",
             title: "Source",
             external: true
@@ -76,7 +73,7 @@ export const getMenuItemBy = {
 }
 
 app.get("/", (_, res: express.Response) => {
-    res.render("home", getMenuItemBy.destination(""))
+    res.render("therapeutics", getMenuItemBy.destination(""))
 })
 
 app.use("/:asset", express.static(join(__dirname, "public")))
@@ -127,6 +124,7 @@ app.get("/:route/:modality_code", (req, res, next) => {
     fetchFromAPI(`${item.route}/${modality_code}`).then((data) => {
         if (data) {
             res.render("listing", {
+                ...item,
                 title: modality.data.displayName,
                 needs_modalities: true,
                 route: route,
@@ -169,6 +167,7 @@ app.get("/:route/:modality_code/:resource", (req, res, next) => {
 
         // TODO: add type safety to API routes
         res.render("single", {
+            ...item,
             title: `${modality.data.displayName} - ${data.name}`,
             needs_modalities: true,
             route: route,

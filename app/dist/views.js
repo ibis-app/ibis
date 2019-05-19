@@ -29,8 +29,9 @@ app.set("views", config_1.paths.views);
 app.set("view engine", ".hbs");
 exports.menuItems = [
     {
-        destination: "",
-        title: "Home"
+        destination: "home",
+        title: "Home",
+        route: "/"
     },
     {
         destination: "therapeutics",
@@ -45,10 +46,6 @@ exports.menuItems = [
         route: "rx"
     },
     {
-        destination: "contact",
-        title: "Contact"
-    },
-    {
         destination: "https://github.com/benjspriggs/ibis",
         title: "Source",
         external: true
@@ -59,7 +56,7 @@ exports.getMenuItemBy = {
     title: (title) => exports.menuItems.find(item => item.title === title)
 };
 app.get("/", (_, res) => {
-    res.render("home", exports.getMenuItemBy.destination(""));
+    res.render("therapeutics", exports.getMenuItemBy.destination(""));
 });
 app.use("/:asset", express_1.default.static(path_1.join(__dirname, "public")));
 app.get("/:route", (req, res, next) => {
@@ -95,12 +92,7 @@ app.get("/:route/:modality_code", (req, res, next) => {
     }
     helpers_2.fetchFromAPI(`${item.route}/${modality_code}`).then((data) => {
         if (data) {
-            res.render("listing", {
-                title: modality.data.displayName,
-                needs_modalities: true,
-                route: route,
-                data: data
-            });
+            res.render("listing", Object.assign({}, item, { title: modality.data.displayName, needs_modalities: true, route: route, data: data }));
         }
         else {
             res.render("error");
@@ -126,12 +118,7 @@ app.get("/:route/:modality_code/:resource", (req, res, next) => {
             return;
         }
         // TODO: add type safety to API routes
-        res.render("single", {
-            title: `${modality.data.displayName} - ${data.name}`,
-            needs_modalities: true,
-            route: route,
-            data: data
-        });
+        res.render("single", Object.assign({}, item, { title: `${modality.data.displayName} - ${data.name}`, needs_modalities: true, route: route, data: data }));
     });
 });
 exports.default = app;
