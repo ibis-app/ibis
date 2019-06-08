@@ -18,6 +18,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-hbs": "^2.1.2",
+    "fomantic-ui": "^2.7.5",
     "got": "^9.6.0",
     "handlebars": "^4.1.2",
     "ibis-api": "file:../ibis-api",
@@ -34,7 +35,8 @@
       "dist/*.js"
     ]
   },
-  "devDependencies": {
-    "fomantic-ui": "^2.7.5"
+  "paths": {
+    "dist": "./dist",
+    "tsconfig": "./tsconfig.json"
   }
 }

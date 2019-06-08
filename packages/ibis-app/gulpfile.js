@@ -1,25 +1,16 @@
 //@ts-check
+const package = require("./package.json")
 const { src, dest, watch, series, parallel, task } = require("gulp")
 const del = require("del")
 const newer = require("gulp-newer")
 const glob = require("glob")
-const ts = require("gulp-typescript")
-const sourcemaps = require("gulp-sourcemaps")
 
-const distributable = "dist"
+const { project } = require("./../../gulpfile")
+
+const distributable = package.paths.dist
 const source = "src"
 
-const nodeTsConfig = ts.createProject("./tsconfig.json")
-
-const buildWithMaps = (tsconfig, destination) => {
-    return tsconfig.src()
-        .pipe(sourcemaps.init())
-        .pipe(tsconfig())
-        .pipe(sourcemaps.write('.', { sourceRoot: "./", includeContent: false }))
-        .pipe(dest(destination));
-};
-
-const buildNode = () => buildWithMaps(nodeTsConfig, distributable)
+const { build, clean } = project(package)
 
 /**
  * @param {string} prefix
@@ -36,7 +27,7 @@ const staticSources = ["semantic/**/*"]
  */
 function watchStaticAssets(done) {
     watch(staticAssets(source), series(cleanStaticAssets, copyStaticAssets))
-    watch(["src/**/*.ts", "!src/public/**/*.ts"], buildNode)
+    watch(["src/**/*.ts", "!src/public/**/*.ts"], build)
     return done()
 }
 
@@ -77,13 +68,10 @@ exports.ls = function (cb) {
 
 task('copy', parallel(copyStaticAssets, copyStaticSources))
 
-task('clean', () => {
-    return del(distributable)
-})
+task('clean', clean)
 
 task('clean-static', parallel(cleanStaticAssets, cleanStaticSources))
 
 task('watch', watchStaticAssets)
-task("node", buildNode);
-task('build', series('node'))
+task('build', build)
 task('default', series('copy', 'build'))
