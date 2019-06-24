@@ -5,10 +5,10 @@
   "main": "start.js",
   "bin": "start.js",
   "scripts": {
-    "start": "node start.js",
+    "start": "node start.js dist",
     "build": "gulp build",
     "build:semantic": "gulp build --gulpfile ./semantic/gulpfile.js",
-    "test": "ava",
+    "build:fast": "gulp buildFast",
     "e2e": "ava --tap --serial e2e/index.test.js e2e/pkg.test.js",
     "pkg": "gulp package",
     "lint": "tslint --project . -t verbose",
@@ -24,6 +24,7 @@
     "handlebars": "^4.1.2",
     "ibis-api": "file:../ibis-api",
     "ibis-lib": "file:../ibis-lib",
+    "jquery": "^3.4.1",
     "node-html-parser": "^1.1.15"
   },
   "optionalDependencies": {
@@ -41,7 +42,10 @@
     "dist": "./dist",
     "publicDist": "./dist/public/scripts/",
     "tsconfig": "./tsconfig.json",
-    "scripts": ["dist/**/*.js", "!dist/semantic/**/*.js"],
+    "scripts": [
+      "dist/**/*.js",
+      "!dist/semantic/**/*.js"
+    ],
     "vendor": [
       "semantic/dist/**/*"
     ],
@@ -55,8 +59,8 @@
     "compileEnhancements": false,
     "tap": true,
     "files": [
-      "dist/**/*.test.js",
-      "e2e/**/*.test.js"
-    ]
+      "dist/**/*.test.js"
+    ],
+    "timeout": "5s"
   }
 }

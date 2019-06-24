@@ -8,7 +8,6 @@ import { router as assets } from "./assets"
 import { join } from "path"
 import { paths } from "./config"
 import { getModality } from "ibis-lib";
-import { readdirSync } from "fs";
 
 const app: Application = express()
 
@@ -65,16 +64,16 @@ export const menuItems: {
             title: "Home",
         },
         {
-            destination: "therapeutics",
+            destination: "treatments",
             title: "Therapeutics",
             needs_modalities: true,
-            route: "tx"
+            route: "treatments"
         },
         {
-            destination: "materia-medica",
-            title: "Materia Medica",
+            destination: "monographs",
+            title: "Monographs",
             needs_modalities: true,
-            route: "rx"
+            route: "monographs"
         },
         {
             destination: "https://github.com/benjspriggs/ibis",
@@ -111,7 +110,12 @@ app.get("/:route", (req: express.Request, res: express.Response, next: express.N
             if (data) {
                 res.render(route, ({ ...item, data: data }))
             } else {
-                res.render("error")
+                res.render("error", {
+                    route: route,
+                    view: route,
+                    message: "no data returned from api",
+                    endpoint: item.endpoint
+                })
             }
         })
     } else {
@@ -147,7 +151,12 @@ app.get("/:route/:modality_code", (req, res, next) => {
                 data: data
             })
         } else {
-            res.render("error")
+            res.render("error", {
+                "message": "no data returned from API",
+                view: "listing",
+                route: item.route,
+                modality: modality_code
+            })
         }
     })
 })
@@ -177,14 +186,19 @@ app.get("/:route/:modality_code/:resource", (req, res, next) => {
 
     fetchFromAPI(`${item.route}/${modality_code}/${resource}`).then((data) => {
         if (!data) {
-            res.render("error")
+            res.render("error", {
+                "message": "no data returned from API",
+                view: "single",
+                route: item.route,
+                modality_code,
+                resource
+            })
             return
         }
 
-        // TODO: add type safety to API routes
         res.render("single", {
             ...item,
-            title: `${modality.data.displayName} - ${data.name}`,
+            title: `${modality.data.displayName} - ${data.header.name}`,
             needs_modalities: true,
             route: route,
             data: data

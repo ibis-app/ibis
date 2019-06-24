@@ -1,10 +1,10 @@
-import { router as db, initialize as dbInitialize } from "./db"
+import { initialize as dbInitialize } from "./db"
+import { router as search } from "./search"
 import { modalities, requestLogger } from "ibis-lib"
 
 import { default as cors } from "cors"
 import { default as express, Application }  from "express"
-import { router as rx } from "./rx"
-import { router as tx } from "./tx"
+import { router as entry } from "./file"
 
 const app: Application = express()
 
@@ -14,18 +14,13 @@ app.use(cors())
 
 app.use(requestLogger)
 
-app.get("/", (_, res: express.Response) => {
-    res.send("API")
-})
-
 app.get("/modalities", (_, res: express.Response) => {
     res.send(modalities)
 })
 
-app.use("/rx", rx)
-app.use("/tx", tx)
+app.use("/data", search)
 
-app.use("/data", db)
+app.use("/", entry)
 
 export {
     app

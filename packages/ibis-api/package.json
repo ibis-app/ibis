@@ -5,10 +5,11 @@
   "main": "dist/index.js",
   "bin": "start.js",
   "scripts": {
-    "start": "node start.js",
+    "start": "node start.js dist",
     "test": "ava",
     "e2e": "ava --tap --serial e2e/index.test.js e2e/pkg.test.js",
     "build": "gulp build",
+    "build:fast": "gulp buildFast",
     "pkg": "gulp package",
     "lint": "tslint --project . -t verbose",
     "clean": "gulp clean"
@@ -41,6 +42,7 @@
     "tap": true,
     "files": [
       "dist/**/*.test.js"
-    ]
+    ],
+    "timeout": "5s"
   }
 }
