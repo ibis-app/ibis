@@ -1,5 +1,5 @@
 // @ts-check
-const { withEntrypoint } = require("ibis-lib");
+const { withEntrypoint } = require("@ibis-app/lib");
 const test = require("ava");
 const { get } = require("request");
 
