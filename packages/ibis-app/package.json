@@ -1,6 +1,6 @@
 {
   "name": "@ibis-app/app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "start.js",
   "bin": "start.js",
   "scripts": {
@@ -16,14 +16,14 @@
   "author": "Ben Spriggs",
   "license": "ISC",
   "dependencies": {
+    "@ibis-app/api": "^0.0.3",
+    "@ibis-app/lib": "^0.0.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-hbs": "^2.1.2",
     "fomantic-ui": "^2.7.5",
     "got": "^9.6.0",
     "handlebars": "^4.1.2",
-    "@ibis-app/api": "^0.0.2",
-    "@ibis-app/lib": "^0.0.2",
     "jquery": "^3.4.1",
     "node-html-parser": "^1.1.15"
   },

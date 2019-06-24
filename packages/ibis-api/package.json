@@ -1,6 +1,6 @@
 {
   "name": "@ibis-app/api",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "bin": "start.js",
   "scripts": {
@@ -16,11 +16,11 @@
   "author": "Ben Spriggs",
   "license": "ISC",
   "dependencies": {
+    "@ibis-app/lib": "^0.0.3",
     "axios": "^0.19.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "fuse.js": "^3.4.2",
-    "@ibis-app/lib": "^0.0.2",
     "lowdb": "^1.0.0",
     "node-html-parser": "^1.1.12",
     "write-file-atomic": "^3.0.0"
