@@ -1,8 +1,8 @@
-import { apiHostname } from "ibis-api"
+import { apiHostname } from "@ibis-app/api"
 import exhbs from "express-hbs"
 import got from "got"
 import { menuItems } from "./views"
-import { modalities } from "ibis-lib"
+import { modalities } from "@ibis-app/lib"
 import { paths } from "./config"
 import { join } from "path"
 

@@ -1,4 +1,4 @@
-import { applicationRoot, isHttpsEnabled } from "ibis-lib"
+import { applicationRoot, isHttpsEnabled } from "@ibis-app/lib"
 import { join } from "path"
 
 const root = __dirname

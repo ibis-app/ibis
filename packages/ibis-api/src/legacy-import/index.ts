@@ -4,7 +4,7 @@ import { readdir, readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { trimConsecutive, trimLeft, parseHeader } from "./utils"
 
-import { modalities, getModality } from "ibis-lib"
+import { modalities, getModality } from "@ibis-app/lib"
 
 import isEmpty from "lodash/isEmpty"
 import { Database, Directory, Entry, Category } from "./../db";

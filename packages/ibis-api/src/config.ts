@@ -1,4 +1,4 @@
-import { isHttpsEnabled } from "ibis-lib"
+import { isHttpsEnabled } from "@ibis-app/lib"
 import { join } from "path"
 
 export const port: number = parseInt(process.env.API_PORT, 10) || 3000

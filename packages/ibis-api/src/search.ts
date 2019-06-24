@@ -1,4 +1,4 @@
-import { getModality } from "ibis-lib"
+import { getModality } from "@ibis-app/lib"
 
 import { default as express, Router } from "express"
 import fuse from "fuse.js"
