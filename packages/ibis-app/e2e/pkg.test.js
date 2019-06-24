@@ -6,13 +6,13 @@ let entryPoint;
 
 switch (process.platform) {
     case "darwin":
-        entryPoint = "ibis-app-macos";
+        entryPoint = "app-macos";
         break;
     case "win32":
-        entryPoint = "ibis-app-win.exe";
+        entryPoint = "app-win.exe";
         break;
     default:
-        entryPoint = "ibis-app-linux";
+        entryPoint = "app-linux";
         break;
 }
 
