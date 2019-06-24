@@ -22,8 +22,8 @@
     "fomantic-ui": "^2.7.5",
     "got": "^9.6.0",
     "handlebars": "^4.1.2",
-    "ibis-api": "file:../ibis-api",
-    "ibis-lib": "file:../ibis-lib",
+    "@ibis-app/api": "^0.0.2",
+    "@ibis-app/lib": "^0.0.2",
     "jquery": "^3.4.1",
     "node-html-parser": "^1.1.15"
   },
