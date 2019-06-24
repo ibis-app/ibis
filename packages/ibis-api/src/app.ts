@@ -1,6 +1,6 @@
 import { initialize as dbInitialize } from "./db"
 import { router as search } from "./search"
-import { modalities, requestLogger } from "ibis-lib"
+import { modalities, requestLogger } from "@ibis-app/lib"
 
 import { default as cors } from "cors"
 import { default as express, Application }  from "express"

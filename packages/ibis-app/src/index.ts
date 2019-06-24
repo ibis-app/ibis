@@ -1,5 +1,5 @@
 import { appHostname, hostname, port } from "./config"
-import { h2 } from "ibis-lib"
+import { h2 } from "@ibis-app/lib"
 
 import { app } from "./app"
 

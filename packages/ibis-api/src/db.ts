@@ -1,4 +1,4 @@
-import { Header, Modality } from "ibis-lib"
+import { Header, Modality } from "@ibis-app/lib"
 import { join } from "path"
 import { importEntriesFromDisk } from "./legacy-import"
 

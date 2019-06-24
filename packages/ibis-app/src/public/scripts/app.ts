@@ -1,7 +1,7 @@
 import "./semantic-api"
-import { CategorizedSearchResult, SearchResult } from "ibis-api"
+import { CategorizedSearchResult, SearchResult } from "@ibis-app/api"
 import { Searchable } from "fomantic-ui"
-import { SearchDirectory } from "ibis-api/dist/search";
+import { SearchDirectory } from "@ibis-app/api/dist/search";
 
 declare var $: JQueryStatic
 

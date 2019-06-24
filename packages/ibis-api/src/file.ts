@@ -1,5 +1,5 @@
 import { default as express } from "express"
-import { Modality, getModality } from "ibis-lib";
+import { Modality, getModality } from "@ibis-app/lib";
 import { Directory, Entry, getMetaContent, getCategoryFromRequestString, getContent } from "./db"
 import isEmpty from "lodash/isEmpty"
 import { formatSearchDirectory, SearchDirectory } from "./search";

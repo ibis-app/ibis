@@ -1,5 +1,5 @@
 import { HTMLElement, Node, TextNode, parse } from "node-html-parser"
-import { Header } from "ibis-lib"
+import { Header } from "@ibis-app/lib"
 
 import flatten from "lodash/flatten"
 
