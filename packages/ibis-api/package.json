@@ -1,7 +1,7 @@
 {
   "name": "ibis-api",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
   "bin": "start.js",
@@ -35,7 +35,10 @@
   },
   "paths": {
     "dist": "./dist",
-    "tsconfig": ["./tsconfig.json", "./tsconfig.js.json"]
+    "tsconfig": [
+      "./tsconfig.json",
+      "./tsconfig.js.json"
+    ]
   },
   "ava": {
     "babel": false,
