@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/benjspriggs/ibis.git"
+    "url": "git+https://github.com/ibis-app/ibis.git"
   },
   "author": "ben@sprico.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/benjspriggs/ibis/issues"
+    "url": "https://github.com/ibis-app/ibis/issues"
   },
-  "homepage": "https://github.com/benjspriggs/ibis#readme",
+  "homepage": "https://github.com/ibis-app/ibis#readme",
   "devDependencies": {
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
