@@ -1,8 +1,6 @@
 {
-  "name": "ibis-app",
+  "name": "@ibis-app/app",
   "version": "0.0.1",
-  "private": true,
-  "description": "",
   "main": "start.js",
   "bin": "start.js",
   "scripts": {
@@ -26,7 +24,8 @@
     "ibis-api": "file:../ibis-api",
     "ibis-lib": "file:../ibis-lib",
     "jquery": "^3.4.1",
-    "node-html-parser": "^1.1.15"
+    "node-html-parser": "^1.1.15",
+    "fomantic-ui": "^2.7.5"
   },
   "optionalDependencies": {
     "fomantic-ui": "^2.7.5"
@@ -63,5 +62,6 @@
       "dist/**/*.test.js"
     ],
     "timeout": "5s"
-  }
+  },
+  "description": ""
 }

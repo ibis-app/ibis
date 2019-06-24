@@ -1,8 +1,6 @@
 {
-  "name": "ibis-lib",
+  "name": "@ibis-app/lib",
   "version": "0.0.1",
-  "description": "",
-  "private": true,
   "main": "dist/index.js",
   "scripts": {
     "build": "gulp build",
@@ -33,5 +31,14 @@
       "dist/**/*.test.js"
     ],
     "timeout": "5s"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ibis-app/ibis.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ibis-app/ibis/issues"
+  },
+  "homepage": "https://github.com/ibis-app/ibis#readme",
+  "description": ""
 }

@@ -1,7 +1,6 @@
 {
-  "name": "ibis",
+  "name": "@ibis-app/ibis",
   "version": "1.0.0",
-  "private": true,
   "description": "Web version of IBIS (MedicineWorks)",
   "scripts": {
     "start": "lerna run --stream start --parallel",

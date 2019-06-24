@@ -1,8 +1,6 @@
 {
-  "name": "ibis-api",
-  "private": true,
+  "name": "@ibis-app/api",
   "version": "0.0.1",
-  "description": "",
   "main": "dist/index.js",
   "bin": "start.js",
   "scripts": {
@@ -48,5 +46,14 @@
       "dist/**/*.test.js"
     ],
     "timeout": "5s"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ibis-app/ibis.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ibis-app/ibis/issues"
+  },
+  "homepage": "https://github.com/ibis-app/ibis#readme",
+  "description": ""
 }
