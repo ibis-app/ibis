@@ -1,6 +1,7 @@
 {
   "name": "ibis-app",
   "version": "1.0.0",
+  "private": true,
   "description": "",
   "main": "start.js",
   "bin": "start.js",
