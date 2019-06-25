@@ -1,6 +1,6 @@
 {
   "name": "@ibis-app/app",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "start.js",
   "bin": "start.js",
   "scripts": {
@@ -16,8 +16,8 @@
   "author": "Ben Spriggs",
   "license": "ISC",
   "dependencies": {
-    "@ibis-app/api": "^0.1.1",
-    "@ibis-app/lib": "^0.1.1",
+    "@ibis-app/api": "^0.1.2",
+    "@ibis-app/lib": "^0.1.2",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-hbs": "^2.1.2",
