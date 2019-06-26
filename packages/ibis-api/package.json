@@ -17,14 +17,12 @@
   "license": "ISC",
   "dependencies": {
     "@ibis-app/lib": "^0.1.2",
-    "@types/pouchdb": "^6.3.3",
     "axios": "^0.19.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "fuse.js": "^3.4.2",
     "lowdb": "^1.0.0",
     "node-html-parser": "^1.1.12",
-    "pouchdb": "^7.1.1",
     "write-file-atomic": "^3.0.0"
   },
   "pkg": {
