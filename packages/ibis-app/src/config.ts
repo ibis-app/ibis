@@ -16,3 +16,4 @@ export const paths = {
 export const port = parseInt(process.env["APP_PORT"]) || 8080
 export const hostname = process.env["APP_HOSTNAME"] || "127.0.0.1"
 export const appHostname = `${isHttpsEnabled() ? "https" : "http"}://${hostname}:${port}`
+export const apiHostname = process.env.APP_API_HOSTNAME || `http://localhost:3000`
