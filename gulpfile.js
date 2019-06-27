@@ -58,10 +58,10 @@ function build(project, dist) {
 
 function project({
     paths: {
-        tsconfig: tsconfig = "./tsconfig.json",
-        src: src = "./src",
-        dist: dist = "./dist",
-        out: out = "./out",
+        tsconfig: tsconfig = "tsconfig.json",
+        src: src = "src",
+        dist: dist = "dist",
+        out: out = "out",
         scripts: scripts = ["dist/**/*.js"],
         /**
          * Assumed to be copied from {@link src}.
@@ -149,7 +149,7 @@ function project({
      */
     function watch() {
         projects.forEach(project => {
-            const typescriptSourceGlobs = project.config.include || `${project.projectDirectory}/**/*`
+            const typescriptSourceGlobs = project.config.include || `${project.projectDirectory}/${src}/**/*`
 
             console.debug('watching following globs for changes:', typescriptSourceGlobs)
 
@@ -190,3 +190,4 @@ function buildTypescriptSources(config, settings) {
 }
 
 exports.project = project;
+
