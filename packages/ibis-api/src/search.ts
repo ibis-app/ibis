@@ -1,9 +1,15 @@
-import { getModality } from "@ibis-app/lib"
+import {
+    Category,
+    Directory,
+    getCategoryFromRequestString,
+    getDirectoryIdentifier,
+    getMetaContent
+} from "./db";
+import { Router, default as express } from "express";
 
-import { default as express, Router } from "express"
-import fuse from "fuse.js"
+import fuse from "fuse.js";
+import { getModality } from "@ibis-app/lib";
 
-import { getMetaContent, Directory, getDirectoryIdentifier, getCategoryFromRequestString, Category } from "./db"
 import flatten = require("lodash/flatten");
 
 const router: Router = express.Router()

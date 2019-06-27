@@ -1,11 +1,9 @@
 import { Header, Modality } from "@ibis-app/lib"
-import { join } from "path"
-import { Request } from "request"
-import { importEntriesFromDisk } from "./legacy-import"
-
 import nano, { MangoQuery } from "nano"
-import { couchInstanceUrl } from "./config";
 
+import { Request } from "request"
+import { couchInstanceUrl } from "./config";
+import { importEntriesFromDisk } from "./legacy-import"
 
 export type Category = "monographs" | "treatments"
 

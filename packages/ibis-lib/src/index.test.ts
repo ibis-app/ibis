@@ -1,6 +1,6 @@
-import test from "ava"
-
 import { getModality, modalities } from "./index"
+
+import test from "ava"
 
 test("index:getModality:falsy", t => {
     t.falsy(getModality())

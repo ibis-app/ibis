@@ -1,9 +1,10 @@
+import { apiHostname, paths } from "./config"
+
 import exhbs from "express-hbs"
 import got from "got"
+import { join } from "path"
 import { menuItems } from "./views"
 import { modalities } from "@ibis-app/lib"
-import { apiHostname, paths } from "./config"
-import { join } from "path"
 
 exhbs.cwd = paths.root
 

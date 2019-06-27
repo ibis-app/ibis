@@ -1,8 +1,8 @@
-import test from "ava"
-
 import { applicationRoot, pkgOptions } from "./pkg"
-import { join } from "path";
+
 import { AssertionError } from "assert";
+import { join } from "path";
+import test from "ava"
 
 const clearPackage = () => {
     delete (process as any).pkg;

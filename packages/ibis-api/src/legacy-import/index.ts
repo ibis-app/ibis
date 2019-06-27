@@ -1,13 +1,13 @@
+import { Category, Database, Directory, Entry } from "./../db";
 import { HTMLElement, Node, parse } from "node-html-parser"
+import { existsSync, readFileSync, readdir } from "fs";
+import { getModality, modalities } from "@ibis-app/lib"
+import { parseHeader, trimConsecutive, trimLeft } from "./utils"
+
 import { config } from "./../config"
-import { readdir, readFileSync, existsSync } from "fs";
-import { join } from "path";
-import { trimConsecutive, trimLeft, parseHeader } from "./utils"
-
-import { modalities, getModality } from "@ibis-app/lib"
-
 import isEmpty from "lodash/isEmpty"
-import { Database, Directory, Entry, Category } from "./../db";
+import { join } from "path";
+
 import flatten = require("lodash/flatten");
 
 type LegacyCategory = "rx" | "tx"

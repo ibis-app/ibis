@@ -1,6 +1,7 @@
-import { spawn, ChildProcess } from "child_process";
-import { randomBytes } from "crypto";
+import { ChildProcess, spawn } from "child_process";
+
 import { Socket } from "net"
+import { randomBytes } from "crypto";
 
 export interface Options {
     command: string,

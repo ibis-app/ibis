@@ -1,9 +1,10 @@
-import { default as express } from "express"
-import { Modality, getModality } from "@ibis-app/lib";
-import { Directory, Entry, getMetaContent, getCategoryFromRequestString, getContent } from "./db"
-import isEmpty from "lodash/isEmpty"
-import { formatSearchDirectory, SearchDirectory } from "./search";
+import { SearchDirectory, formatSearchDirectory } from "./search";
+import { getCategoryFromRequestString, getContent, getMetaContent } from "./db"
+
 import { Request } from "request"
+import { default as express } from "express"
+import { getModality } from "@ibis-app/lib";
+import isEmpty from "lodash/isEmpty"
 
 const router = express.Router()
 
@@ -58,7 +59,7 @@ router.get("/", (req, res) => {
     res.send()
 })
 
-router.get("/:category/:modality/:id?", (req, res, next) => {
+router.get("/:category/:modality/:id?", (req, res) => {
     return handleRequest(req.params)
         .then(response => {
             var r = response as Request

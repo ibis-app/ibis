@@ -1,9 +1,10 @@
-import spdy from "spdy"
+import { IncomingMessage, ServerResponse } from "http"
+
 import http from "http"
 import pem from "pem"
-import { IncomingMessage, ServerResponse } from "http"
 import program from "commander"
 import { readFileSync } from "fs"
+import spdy from "spdy"
 
 export interface ServerOptions {
     key?: string,

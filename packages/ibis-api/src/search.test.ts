@@ -1,8 +1,8 @@
-import { router as search, SearchResult, query, directoryFilter } from "./search"
-import { getModality } from "@ibis-app/lib"
+import { SearchResult, directoryFilter, query, router as search } from "./search"
 
 import bodyparser from "body-parser"
 import express from "express"
+import { getModality } from "@ibis-app/lib"
 import request from "supertest"
 import test from "ava"
 

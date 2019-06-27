@@ -1,7 +1,7 @@
 import { appHostname, hostname, port } from "./config"
-import { h2 } from "@ibis-app/lib"
 
 import { app } from "./app"
+import { h2 } from "@ibis-app/lib"
 
 export const start = () => h2(app)
         .then(server => {
