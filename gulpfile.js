@@ -144,10 +144,24 @@ function project({
         }
     }
 
+    /**
+     * Watches all source files
+     */
+    function watch() {
+        projects.forEach(project => {
+            const typescriptSourceGlobs = project.config.include || `${project.projectDirectory}/**/*`
+
+            console.debug('watching following globs for changes:', typescriptSourceGlobs)
+
+            gulp.watch(typescriptSourceGlobs, localBuild)
+        })
+    }
+
     return {
         copy: copyStaticSourcesToDestination,
         build: gulp.parallel(copyStaticSourcesToDestination, localBuild),
         buildFast: gulp.parallel(copyStaticSourcesToDestination, localBuildFast),
+        watch: watch,
         clean: clean,
         compress: compress(scripts, out),
         bundle: bundle,
