@@ -125,9 +125,5 @@ export async function importEntriesFromDisk(): Promise<Database> {
     return {
         "monographs": (await monographs).map(stripContent),
         "treatments": (await diseases).map(stripContent),
-        "content": {
-            "monographs": await monographs,
-            "treatments": await diseases
-        }
     }
 }

@@ -1,9 +1,11 @@
 import { Header, Modality } from "@ibis-app/lib"
 import { join } from "path"
+import { Request } from "request"
 import { importEntriesFromDisk } from "./legacy-import"
 
-import BetterFileAsync from "./BetterFileAsync"
-import lowdb from "lowdb"
+import nano, { MangoQuery } from "nano"
+import { couchInstanceUrl } from "./config";
+
 
 export type Category = "monographs" | "treatments"
 
@@ -39,62 +41,58 @@ export interface Database {
     /**
      * The treatments for specific diseases, using components from a modality.
      */
-    treatments: Directory[],
-    content: {
-        monographs: Entry[],
-        treatments: Entry[]
-    }
+    treatments: Directory[]
 }
 
 export function getDirectoryIdentifier(directory: { category: Category, modality: Modality, id: string }): string {
     return `/${directory.category}/${directory.modality.code}/${directory.id}`
 }
 
-const adapter = new BetterFileAsync<Database>(join(process.cwd(), "db.json"), {
-    defaultValue: {
-        monographs: [],
-        treatments: [],
-        content: {
-            monographs: [],
-            treatments: []
-        }
-    },
-})
+var server = nano(couchInstanceUrl)
 
-function database(): Promise<lowdb.LowdbAsync<Database>> {
-    return lowdb(adapter)
-}
-
-export async function getMetaContent(category: Category, query?: (d: Directory) => boolean): Promise<Directory[]> {
-    const db = await database()
-
-    const treatments = db.get(category)
-
-    if (!query) {
-        return treatments.value();
-    } else {
-        return treatments.filter(query).value();
+function getDatabase(category: Category) {
+    switch (category) {
+        case "monographs":
+            return server.db.use<Directory>("monographs");
+        case "treatments":
+            return server.db.use<Directory>("treatments");
+            default:
+                throw new Error(`failed to get database for category '${category}'`)
     }
 }
 
-export async function getContent(category: Category, query?: (e: Entry) => boolean): Promise<Entry[]> {
-    const db = await database()
+async function getEntry(directory: Directory) {
+    var db = getDatabase(directory.category)
 
-    const treatments = db.get("content").get(category)
+    return await db.attachment.getAsStream(getDirectoryIdentifier(directory), "entry")
+}
+
+export async function getMetaContent(category: Category, query?: MangoQuery): Promise<Directory[]> {
+    const treatments = getDatabase(category)
 
     if (!query) {
-        return treatments.value();
+        // TODO: listAsStream?
+        // https://www.npmjs.com/package/nano#nanodblistasstream
+        var allDocumentResponse = await treatments.list({ include_docs: true })
+        return allDocumentResponse.rows.map(r => r.doc)
     } else {
-        return treatments.filter(query).value();
+        var response = await treatments.find(query)
+        return response.docs
     }
+}
+
+export async function getContent(category: Category, query: MangoQuery): Promise<Request[]> {
+    const docs = await getMetaContent(category, query)
+
+    return await Promise.all(docs.map(doc => getEntry(doc)))
+}
+
+async function isCouchDbInstanceInitialized(): Promise<boolean> {
+    return false;
 }
 
 export async function initialize() {
-    const db = await database()
-
-    console.debug("initializing...")
-
-    if (db.get("treatments").value().length !== 0) {
+    if (await isCouchDbInstanceInitialized()) {
         console.debug("initialized (cached)")
         return
     }
@@ -102,9 +100,17 @@ export async function initialize() {
     try {
         console.debug(`fetching all listings from legacy IBIS directory`)
 
+        const monographs = server.use("monographs")
+        const treatments = server.use("treatments")
+
         const imported = await importEntriesFromDisk()
 
-        await db.setState(imported).write()
+        await Promise.all([monographs.bulk({
+            docs: imported.monographs
+        }),
+        treatments.bulk({
+            docs: imported.treatments
+        })]);
 
         console.debug("initialized")
     } catch (e) {

@@ -3,16 +3,9 @@ import { Modality, getModality } from "@ibis-app/lib";
 import { Directory, Entry, getMetaContent, getCategoryFromRequestString, getContent } from "./db"
 import isEmpty from "lodash/isEmpty"
 import { formatSearchDirectory, SearchDirectory } from "./search";
+import { Request } from "request"
 
 const router = express.Router()
-
-function shouldIncludeDirectory(modality: Modality, directory: Directory): boolean {
-    return directory.modality.code === modality.code
-}
-
-function shouldIncludeEntry(modality: Modality, id: string, entry: Entry): boolean {
-    return shouldIncludeDirectory(modality, entry) && id === entry.id
-}
 
 /**
  * Mostly used for debug purposes. What purposes?
@@ -30,11 +23,7 @@ async function handleRequest(options: {
     category: string,
     modality: string,
     id?: string
-}): Promise<Entry | {
-    modality: Modality
-    empty: boolean,
-    meta: SearchDirectory[]
-}> {
+}) {
     if (!options.category || !options.modality) {
         throw new Error("missing category or modality")
     }
@@ -48,11 +37,11 @@ async function handleRequest(options: {
     }
 
     if (options.id) {
-        const entries = await getContent(matchedCategory, (e) => shouldIncludeEntry(matchedModality, options.id, e))
+        const entries = await getContent(matchedCategory, { selector: { modality: { code: matchedModality.code }, id: options.id } })
 
         return entries[0]
     } else {
-        const entries = await getMetaContent(matchedCategory, (d: Directory) => shouldIncludeDirectory(matchedModality, d))
+        const entries = await getMetaContent(matchedCategory, { selector: { modality: { code: matchedModality. code }, }})
 
         const meta = entries.map(formatSearchDirectory)
 
@@ -71,7 +60,16 @@ router.get("/", (req, res) => {
 
 router.get('/:category/:modality/:id?', (req, res, next) => {
     return handleRequest(req.params)
-        .then(response => res.send(response))
+        .then(response => {
+            var r = response as Request
+            
+            if (r) {
+                res.type('json')
+                r.pipe(res)
+            } else {
+                res.send(response)
+            }
+        })
         .catch(() => res.sendStatus(404))
 })
 

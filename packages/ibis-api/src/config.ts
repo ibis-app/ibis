@@ -4,6 +4,9 @@ import { join } from "path"
 export const port: number = parseInt(process.env.API_PORT, 10) || 3000
 export const hostname: string = process.env.API_HOSTNAME || "127.0.0.1"
 export const apiHostname: string = `${isHttpsEnabled() ? "https" : "http"}://${hostname}:${port}`
+export const couchHostname: string = process.env.API_COUCH_HOSTNAME || "http://localhost"
+export const couchPort: number = parseInt(process.env.API_COUCH_PORT, 10) || 5984
+export const couchInstanceUrl: string = `${couchHostname}:${couchPort}`
 
 const ibisRoot: string = join(process.cwd(), "IBIS-Mac OS X")
 const system: string = join(ibisRoot, "system")
