@@ -8,7 +8,7 @@ install:
 before_script:
   - npm run build:semantic
   - npm run build
-  - npm run pkg
+  # - npm run pkg
 script:
   - npm test
   - npm run e2e
