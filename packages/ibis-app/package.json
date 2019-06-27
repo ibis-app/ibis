@@ -11,6 +11,7 @@
     "e2e": "ava --tap --serial e2e/index.test.js e2e/pkg.test.js",
     "pkg": "gulp package",
     "lint": "tslint --project . -t verbose",
+    "watch": "gulp watch",
     "clean": "gulp clean"
   },
   "author": "Ben Spriggs",
