@@ -1,0 +1,7 @@
+dist/*
+semantic/*
+out/semantic/**/*.js
+out/semantic/**/*.css
+!out/semantic/**/*.min.js
+!out/semantic/**/*.min.css
+
