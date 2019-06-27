@@ -34,10 +34,7 @@
   },
   "paths": {
     "dist": "./dist",
-    "tsconfig": [
-      "./tsconfig.json",
-      "./tsconfig.js.json"
-    ]
+    "tsconfig": "./tsconfig.json"
   },
   "ava": {
     "babel": false,
