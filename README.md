@@ -1,8 +1,8 @@
 # ibis
 
-[![Build Status](https://travis-ci.com/benjspriggs/ibis.svg?branch=master)](https://travis-ci.com/benjspriggs/ibis) [![Greenkeeper badge](https://badges.greenkeeper.io/benjspriggs/ibis.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.com/ibis-app/ibis.svg?branch=master)](https://travis-ci.com/ibis-app/ibis) [![Greenkeeper badge](https://badges.greenkeeper.io/ibis-app/ibis.svg)](https://greenkeeper.io/)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
-[![Maintainability](https://api.codeclimate.com/v1/badges/5038dc9614b67db2b27f/maintainability)](https://codeclimate.com/github/benjspriggs/ibis/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/58e7eb362df37a292de4/maintainability)](https://codeclimate.com/github/ibis-app/ibis/maintainability)
 
 Serves an old app via node: <http://ouribis.com>.
 

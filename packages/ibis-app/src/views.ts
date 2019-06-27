@@ -76,7 +76,7 @@ export const menuItems: {
             route: "monographs"
         },
         {
-            destination: "https://github.com/benjspriggs/ibis",
+            destination: "https://github.com/ibis-app/ibis",
             title: "Source",
             external: true
         },
