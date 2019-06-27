@@ -65,10 +65,12 @@ function project({
         scripts: scripts = ["dist/**/*.js"],
         /**
          * Assumed to be copied from {@link src}.
+         * @type {string[]}
          */
         static: static = null,
         /**
          * Copied as is to {@link dist} and {@link out}.
+         * @type {string[]}
          */
         vendor: vendor = null
     }
@@ -151,10 +153,20 @@ function project({
         projects.forEach(project => {
             const typescriptSourceGlobs = project.config.include || `${project.projectDirectory}/${src}/**/*`
 
-            console.debug('watching following globs for changes:', typescriptSourceGlobs)
+            console.debug(`(${project.configFileName}) watching following typescript files for changes:`, typescriptSourceGlobs)
 
             gulp.watch(typescriptSourceGlobs, localBuild)
         })
+
+        if (static) {
+            console.debug('watching following static files for changes:', static)
+            gulp.watch(static, copyStaticSourcesToDestination)
+        }
+
+        if (vendor) {
+            console.debug('watching following static vendor files globs for changes:', vendor)
+            gulp.watch(vendor, copyStaticSourcesToDestination)
+        }
     }
 
     return {
