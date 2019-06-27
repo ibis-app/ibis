@@ -11,7 +11,8 @@
     "test": "lerna run --stream test --parallel",
     "e2e": "lerna run --stream e2e",
     "pkg": "lerna run --stream pkg",
-    "lint": "lerna run --stream lint --parallel",
+    "lint": "lerna run --stream lint --parallel --no-bail --no-prefix",
+    "lint:fix": "lerna run --stream lint:fix --parallel --no-bail --no-prefix",
     "watch": "lerna run --stream watch --parallel",
     "clean": "lerna run --stream clean --parallel"
   },
