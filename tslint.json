@@ -10,6 +10,7 @@
         ]
     },
     "rules": {
+        "no-implicit-dependencies": true,
         "semi": false,
         "no-constant-condition": true,
         "eofline": true,
