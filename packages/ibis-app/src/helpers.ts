@@ -13,9 +13,9 @@ const menuLayoutPath = join(paths.views, "partials/menu")
 
 export const fetchFromAPI = (endpoint: string) => {
     const absolutePath = `${apiHostname}/${endpoint}`
-    console.log('fetching from api:', absolutePath)
+    console.log("fetching from api:", absolutePath)
     return got(absolutePath, {
-        method: 'GET',
+        method: "GET",
         json: true
     })
     .then(response => response.body)

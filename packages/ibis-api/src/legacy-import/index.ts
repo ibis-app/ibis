@@ -23,7 +23,7 @@ function getCategoryFromLegacy(cat: LegacyCategory): Category {
 }
 
 async function getDeserialized(absoluteFilePath: string) {
-    const content = readFileSync(absoluteFilePath, { encoding: 'utf-8' })
+    const content = readFileSync(absoluteFilePath, { encoding: "utf-8" })
 
     const parsed = parse(content.toString(), { noFix: false, lowerCaseTagName: false })
 
@@ -109,7 +109,7 @@ async function getAllListings(category: LegacyCategory): Promise<Entry[]> {
 export async function importEntriesFromDisk(): Promise<Database> {
     console.debug(`fetching all listings from legacy IBIS directory: '${config.relative.ibisRoot(".")}'`)
 
-    if (!existsSync(config.relative.ibisRoot('.'))) {
+    if (!existsSync(config.relative.ibisRoot("."))) {
         console.error("no IBIS directory detected, skipping initialization")
     }
 

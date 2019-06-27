@@ -11,6 +11,6 @@ export function applicationRoot() {
         // https://www.npmjs.com/package/pkg#snapshot-filesystem
         return dirname(pkg.entrypoint);
     } else {
-        return join(__dirname, '../..')
+        return join(__dirname, "../..")
     }
 }

@@ -58,13 +58,13 @@ router.get("/", (req, res) => {
     res.send()
 })
 
-router.get('/:category/:modality/:id?', (req, res, next) => {
+router.get("/:category/:modality/:id?", (req, res, next) => {
     return handleRequest(req.params)
         .then(response => {
             var r = response as Request
             
             if (r) {
-                res.type('json')
+                res.type("json")
                 r.pipe(res)
             } else {
                 res.send(response)

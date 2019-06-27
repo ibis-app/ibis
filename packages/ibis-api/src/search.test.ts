@@ -125,38 +125,38 @@ test("search:query:modality", (t) => {
 
 test("search:directoryFilter:modality:false", (t) => {
     var f = directoryFilter({
-        text: 'anything',
-        modality: 'bota'
+        text: "anything",
+        modality: "bota"
     })
 
     t.is(false, f({
-        id: '',
+        id: "",
         category: "treatments",
-        modality: getModality('home'),
+        modality: getModality("home"),
         header: {
-            version: '',
-            tag: '',
-            name: '',
-            category: ''
+            version: "",
+            tag: "",
+            name: "",
+            category: ""
         }
     }))
 })
 
 test("search:directoryFilter:modality:true", (t) => {
     var f = directoryFilter({
-        text: 'anything',
-        modality: 'bota'
+        text: "anything",
+        modality: "bota"
     })
 
     t.is(true, f({
-        id: '',
+        id: "",
         category: "treatments",
-        modality: getModality('bota'),
+        modality: getModality("bota"),
         header: {
-            version: '',
-            tag: '',
-            name: '',
-            category: ''
+            version: "",
+            tag: "",
+            name: "",
+            category: ""
         }
     }))
 })
