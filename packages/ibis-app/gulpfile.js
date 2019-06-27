@@ -6,7 +6,7 @@ const debug = require("gulp-debug")
 
 const { project } = require("./../../gulpfile")
 
-const { build, buildFast, clean, compress, bundle, copy, package: pkg } = project(package)
+const { build, buildFast, clean, compress, bundle, copy, watch, package: pkg } = project(package)
 
 task('copy', copy)
 
@@ -28,4 +28,5 @@ task('buildFast', parallel(buildFast, buildPublicScripts))
 task('compress', compress)
 task('bundle', bundle)
 task('package', pkg)
+task('watch', watch)
 task('default', parallel('copy', 'build'))

@@ -12,6 +12,7 @@
     "e2e": "lerna run --stream e2e",
     "pkg": "lerna run --stream pkg",
     "lint": "lerna run --stream lint --parallel",
+    "watch": "lerna run --stream watch --parallel",
     "clean": "lerna run --stream clean --parallel"
   },
   "repository": {
