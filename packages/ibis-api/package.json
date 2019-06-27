@@ -22,7 +22,6 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "fuse.js": "^3.4.2",
-    "lowdb": "^1.0.0",
     "nano": "^8.1.0",
     "node-html-parser": "^1.1.12",
     "write-file-atomic": "^3.0.0"

@@ -38,7 +38,6 @@
     "@types/jquery": "^3.3.29",
     "@types/js-beautify": "^1.8.0",
     "@types/lodash": "^4.14.121",
-    "@types/lowdb": "^1.0.6",
     "@types/node-fetch": "^2.3.3",
     "@types/pify": "^3.0.2",
     "@types/shelljs": "^0.8.2",
