@@ -5,6 +5,7 @@ install:
   - npm ci
   - npx lerna bootstrap
 before_script:
+  - export PKG_CACHE_PATH=$TRAVIS_BUILD_DIR/pkg
   - npm run build:semantic
   - npm run build
   - npm run pkg
