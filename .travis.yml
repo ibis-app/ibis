@@ -6,6 +6,9 @@ install:
   - npx lerna bootstrap
 before_script:
   - export PKG_CACHE_PATH=$TRAVIS_BUILD_DIR/pkg
+  - npx pkg-fetch node10 win x64
+  - npx pkg-fetch node10 macos x64
+  - npx pkg-fetch node10 linux x64
   - npm run build:semantic
   - npm run build
   - npm run pkg
