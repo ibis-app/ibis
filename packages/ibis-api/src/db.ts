@@ -1,6 +1,7 @@
 import { Header, Modality } from "@ibis-app/lib"
 import nano, { MangoQuery } from "nano"
 
+import { randomBytes } from "crypto";
 import { Request } from "request"
 import { couchInstanceUrl } from "./config";
 import { importEntriesFromDisk } from "./legacy-import"
@@ -46,27 +47,59 @@ export function getDirectoryIdentifier(directory: { category: Category, modality
     return `/${directory.category}/${directory.modality.code}/${directory.id}`
 }
 
-var server = nano(couchInstanceUrl)
+var server = new Promise<nano.ServerScope>((resolve) => {
+    const id = randomBytes(10).toString("base64")
 
-function getDatabase(category: Category) {
+    const couchConnectionOptions: nano.Configuration = {
+        url: couchInstanceUrl,
+        requestDefaults: {
+            timeout: 5000
+        },
+        log: (requestBody, args) => console.debug(`[${id}][couchdb] ${JSON.stringify(requestBody)} ${args}`)
+    }
+
+    console.debug(`[${id}] connecting to couchdb`, couchConnectionOptions)
+    const serverScope = nano(couchConnectionOptions)
+    console.debug(`[${id}] successfully opened connection`, couchConnectionOptions)
+    resolve(serverScope)
+})
+
+async function initializeDatabase(dbName: string) {
+    const s = await server
+    try {
+        await s.db.get(dbName)
+        return true
+    } catch {
+        await s.db.create(dbName)
+        return true
+    }
+}
+
+async function initializeDatabases() {
+    return await Promise.all([initializeDatabase("monographs"), initializeDatabase("treatments")])
+}
+
+async function getDatabase(category: Category) {
+    await initializeDatabases()
+
     switch (category) {
         case "monographs":
-            return server.db.use<Directory>("monographs");
+            return (await server).db.use<Directory>("monographs");
         case "treatments":
-            return server.db.use<Directory>("treatments");
+            return (await server).db.use<Directory>("treatments");
             default:
                 throw new Error(`failed to get database for category '${category}'`)
     }
 }
 
 async function getEntry(directory: Directory) {
-    var db = getDatabase(directory.category)
+    var db = await getDatabase(directory.category)
 
     return await db.attachment.getAsStream(getDirectoryIdentifier(directory), "entry")
 }
 
 export async function getMetaContent(category: Category, query?: MangoQuery): Promise<Directory[]> {
-    const treatments = getDatabase(category)
+    const treatments = await getDatabase(category)
 
     if (!query) {
         // TODO: listAsStream?
@@ -98,8 +131,8 @@ export async function initialize() {
     try {
         console.debug(`fetching all listings from legacy IBIS directory`)
 
-        const monographs = server.use("monographs")
-        const treatments = server.use("treatments")
+        const monographs = (await server).use("monographs")
+        const treatments = (await server).use("treatments")
 
         const imported = await importEntriesFromDisk()
 
