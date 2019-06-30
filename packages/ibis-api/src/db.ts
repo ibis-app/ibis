@@ -64,15 +64,22 @@ var server = new Promise<nano.ServerScope>((resolve) => {
     resolve(serverScope)
 })
 
+const initialized: { [key: string]: boolean } = {}
+
 async function initializeDatabase(dbName: string) {
-    const s = await server
-    try {
-        await s.db.get(dbName)
-        return true
-    } catch {
-        await s.db.create(dbName)
+    if (dbName in initialized) {
         return true
     }
+
+    const s = await server
+
+    try {
+        await s.db.get(dbName)
+    } catch {
+        initialized[dbName] = false
+        await s.db.create(dbName)
+    }
+    initialized[dbName] = true
 }
 
 async function initializeDatabases() {
@@ -127,6 +134,8 @@ export async function initialize() {
         console.debug("initialized (cached)")
         return
     }
+
+    await initializeDatabases()
 
     try {
         console.debug(`fetching all listings from legacy IBIS directory`)
