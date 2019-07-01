@@ -1,5 +1,5 @@
 import { Header, Modality } from "@ibis-app/lib"
-import nano, { MangoQuery } from "nano"
+import nano, { MangoQuery, DocumentInsertResponse } from "nano"
 
 import { randomBytes } from "crypto";
 import { Request } from "request"
@@ -26,10 +26,6 @@ export interface Directory {
     category: Category,
     modality: Modality,
     header: Header
-}
-
-export interface Entry extends Directory {
-    content: string
 }
 
 export interface Database {
@@ -67,17 +63,23 @@ var server = new Promise<nano.ServerScope>((resolve) => {
 const initialized: { [key: string]: boolean } = {}
 
 async function initializeDatabase(dbName: string) {
+    console.debug("initializing", dbName, initialized)
     if (dbName in initialized) {
+        console.debug("initialized (cached)", dbName)
         return true
     }
 
     const s = await server
 
     try {
+        console.debug("attempting", dbName)
         await s.db.get(dbName)
+        console.debug("existing db", dbName)
     } catch {
+        console.debug("no db", dbName)
         initialized[dbName] = false
         await s.db.create(dbName)
+        console.debug("created db", dbName)
     }
     initialized[dbName] = true
 }
@@ -125,35 +127,18 @@ export async function getContent(category: Category, query: MangoQuery): Promise
     return await Promise.all(docs.map(doc => getEntry(doc)))
 }
 
-async function isCouchDbInstanceInitialized(): Promise<boolean> {
-    return false;
+export async function createOrUpdateMetaContent(directory: Directory): Promise<DocumentInsertResponse> {
+    const db = await getDatabase(directory.category)
+
+    return await db.insert(directory)
+}
+
+export async function createOrUpdateContent(directory: Directory, content: Buffer | string, contentType: string): Promise<DocumentInsertResponse> {
+    const db = await getDatabase(directory.category)
+
+    return await db.attachment.insert(getDirectoryIdentifier(directory), "content", content, contentType)
 }
 
 export async function initialize() {
-    if (await isCouchDbInstanceInitialized()) {
-        console.debug("initialized (cached)")
-        return
-    }
-
     await initializeDatabases()
-
-    try {
-        console.debug(`fetching all listings from legacy IBIS directory`)
-
-        const monographs = (await server).use("monographs")
-        const treatments = (await server).use("treatments")
-
-        const imported = await importEntriesFromDisk()
-
-        await Promise.all([monographs.bulk({
-            docs: imported.monographs
-        }),
-        treatments.bulk({
-            docs: imported.treatments
-        })]);
-
-        console.debug("initialized")
-    } catch (e) {
-        console.error(`unable to initialize: ${e}`)
-    }
 }

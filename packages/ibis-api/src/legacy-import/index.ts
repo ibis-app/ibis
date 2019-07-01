@@ -1,4 +1,4 @@
-import { Category, Database, Directory, Entry } from "./../db";
+import { Category, Directory, initialize, createOrUpdateMetaContent, createOrUpdateContent } from "./../db";
 import { HTMLElement, Node, parse } from "node-html-parser"
 import { existsSync, readFileSync, readdir } from "fs";
 import { getModality, modalities } from "@ibis-app/lib"
@@ -11,6 +11,10 @@ import { join } from "path";
 import flatten = require("lodash/flatten");
 
 type LegacyCategory = "rx" | "tx"
+
+interface Entry extends Directory {
+    content: string;
+}
 
 function getCategoryFromLegacy(cat: LegacyCategory): Category {
     if (cat === "tx") {
@@ -106,24 +110,39 @@ async function getAllListings(category: LegacyCategory): Promise<Entry[]> {
         })))
 }
 
-export async function importEntriesFromDisk(): Promise<Database> {
+export async function importEntriesFromDisk(): Promise<Entry[]> {
     console.debug(`fetching all listings from legacy IBIS directory: '${config.relative.ibisRoot(".")}'`)
 
     if (!existsSync(config.relative.ibisRoot("."))) {
         console.error("no IBIS directory detected, skipping initialization")
     }
 
-    function stripContent(entry: Entry): Directory {
-        const { content, ...directory } = entry
+    return flatten(await Promise.all([getAllListings("tx"), getAllListings("rx")]))
+}
 
-        return directory;
+async function doesCouchDbInstanceContainLegacyEntries(): Promise<boolean> {
+    return false;
+}
+
+export async function importLegacyEntries() {
+    await initialize()
+
+    if (await doesCouchDbInstanceContainLegacyEntries()) {
+        return
     }
 
-    const diseases = getAllListings("tx")
-    const monographs = getAllListings("rx")
+    try {
+        console.debug(`fetching all listings from legacy IBIS directory`)
 
-    return {
-        "monographs": (await monographs).map(stripContent),
-        "treatments": (await diseases).map(stripContent),
+        const imported = await importEntriesFromDisk()
+
+        await Promise.all(imported.map(async i => {
+            await createOrUpdateMetaContent(i)
+            await createOrUpdateContent(i, i.content, "text/html")
+        }))
+
+        console.debug("initialized")
+    } catch (e) {
+        console.error(`unable to initialize: ${e}`)
     }
 }
