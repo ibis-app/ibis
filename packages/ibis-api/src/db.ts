@@ -60,15 +60,12 @@ var server = new Promise<nano.ServerScope>((resolve) => {
     resolve(serverScope)
 })
 
-const initialized: { [key: string]: boolean } = {}
+const databases: { [key in Category]: Promise<boolean> } = {
+    "monographs": initializeDatabase("monographs"),
+    "treatments": initializeDatabase("treatments")
+};
 
-async function initializeDatabase(dbName: string) {
-    console.debug("initializing", dbName, initialized)
-    if (dbName in initialized) {
-        console.debug("initialized (cached)", dbName)
-        return true
-    }
-
+async function initializeDatabase(dbName: Category) {
     const s = await server
 
     try {
@@ -77,11 +74,11 @@ async function initializeDatabase(dbName: string) {
         console.debug("existing db", dbName)
     } catch {
         console.debug("no db", dbName)
-        initialized[dbName] = false
         await s.db.create(dbName)
         console.debug("created db", dbName)
     }
-    initialized[dbName] = true
+
+    return true
 }
 
 async function initializeDatabases() {
@@ -89,12 +86,13 @@ async function initializeDatabases() {
 }
 
 async function getDatabase(category: Category) {
-    await initializeDatabases()
 
     switch (category) {
         case "monographs":
+            await databases.monographs
             return (await server).db.use<Directory>("monographs");
         case "treatments":
+            await databases.treatments
             return (await server).db.use<Directory>("treatments");
             default:
                 throw new Error(`failed to get database for category '${category}'`)
