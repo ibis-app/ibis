@@ -60,7 +60,7 @@ var server = new Promise<nano.ServerScope>((resolve) => {
     resolve(serverScope)
 })
 
-const databases: { [key in Category]: Promise<boolean> } = {
+const databases: { [key in Category]: Promise<void> } = {
     "monographs": initializeDatabase("monographs"),
     "treatments": initializeDatabase("treatments")
 };
@@ -69,16 +69,10 @@ async function initializeDatabase(dbName: Category) {
     const s = await server
 
     try {
-        console.debug("attempting", dbName)
         await s.db.get(dbName)
-        console.debug("existing db", dbName)
     } catch {
-        console.debug("no db", dbName)
         await s.db.create(dbName)
-        console.debug("created db", dbName)
     }
-
-    return true
 }
 
 async function initializeDatabases() {
