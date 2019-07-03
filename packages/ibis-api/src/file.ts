@@ -1,7 +1,6 @@
-import { SearchDirectory, formatSearchDirectory } from "./search";
+import { SearchDirectory, formatSearchDirectory, directoryFilter } from "./search";
 import { getCategoryFromRequestString, getContent, getMetaContent } from "./db"
 
-import { Request } from "request"
 import { default as express } from "express"
 import { getModality } from "@ibis-app/lib";
 import isEmpty from "lodash/isEmpty"
@@ -38,11 +37,18 @@ async function handleRequest(options: {
     }
 
     if (options.id) {
-        const entries = await getContent(matchedCategory, { selector: { modality: { code: matchedModality.code }, id: options.id } })
+        const selector = {
+            modality: { code: matchedModality.code }, _id: options.id
+        }
+        const directories = await getMetaContent(matchedCategory, { selector: selector })
+        const contentEntries = await getContent(matchedCategory, { selector: selector })
 
-        return entries[0]
+        return {
+            ...directories[0],
+            content: contentEntries[0]
+        }
     } else {
-        const entries = await getMetaContent(matchedCategory, { selector: { modality: { code: matchedModality. code }, }})
+        const entries = await getMetaContent(matchedCategory, { selector: { modality: { code: matchedModality.code }, } })
 
         const meta = entries.map(formatSearchDirectory)
 
@@ -62,16 +68,12 @@ router.get("/", (req, res) => {
 router.get("/:category/:modality/:id?", (req, res) => {
     return handleRequest(req.params)
         .then(response => {
-            var r = response as Request
-            
-            if (r) {
-                res.type("json")
-                r.pipe(res)
-            } else {
-                res.send(response)
-            }
+            res.send(response)
         })
-        .catch(() => res.sendStatus(404))
+        .catch((e) => {
+            console.error(e)
+            res.sendStatus(404)
+        })
 })
 
 export {
