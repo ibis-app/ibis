@@ -1,8 +1,8 @@
 import {
     Category,
     Directory,
+    ExistingDirectory,
     getCategoryFromRequestString,
-    getDirectoryIdentifier,
     getMetaContent
 } from "./db";
 import { Router, default as express } from "express";
@@ -50,10 +50,10 @@ export interface SearchDirectory extends Directory {
     url: string
 }
 
-export function formatSearchDirectory(directory: Directory): SearchDirectory {
+export function formatSearchDirectory(directory: ExistingDirectory): SearchDirectory {
     return {
         ...directory,
-        url: getDirectoryIdentifier(directory)
+        url: `${directory.modality.code}/${directory._id}`
     }
 }
 
