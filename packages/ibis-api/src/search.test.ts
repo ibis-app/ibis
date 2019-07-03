@@ -130,7 +130,6 @@ test("search:directoryFilter:modality:false", (t) => {
     })
 
     t.is(false, f({
-        id: "",
         category: "treatments",
         modality: getModality("home"),
         header: {
@@ -149,7 +148,6 @@ test("search:directoryFilter:modality:true", (t) => {
     })
 
     t.is(true, f({
-        id: "",
         category: "treatments",
         modality: getModality("bota"),
         header: {
