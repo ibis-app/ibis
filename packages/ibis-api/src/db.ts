@@ -1,10 +1,9 @@
 import { Header, Modality } from "@ibis-app/lib"
-import nano, { MangoQuery, DocumentInsertResponse } from "nano"
+import nano, { MangoQuery, DocumentInsertResponse, IdentifiedDocument, RevisionedDocument } from "nano"
 
 import { randomBytes } from "crypto";
 import { Request } from "request"
 import { couchInstanceUrl } from "./config";
-import { importEntriesFromDisk } from "./legacy-import"
 
 export type Category = "monographs" | "treatments"
 
@@ -22,10 +21,13 @@ export function getCategoryFromRequestString(category: string): Category {
 }
 
 export interface Directory {
-    id: string,
     category: Category,
     modality: Modality,
     header: Header
+}
+
+export interface ExistingDirectory extends Directory, IdentifiedDocument, RevisionedDocument {
+
 }
 
 export interface Database {
@@ -39,10 +41,6 @@ export interface Database {
     treatments: Directory[]
 }
 
-export function getDirectoryIdentifier(directory: { category: Category, modality: Modality, id: string }): string {
-    return `/${directory.category}/${directory.modality.code}/${directory.id}`
-}
-
 var server = new Promise<nano.ServerScope>((resolve) => {
     const id = randomBytes(10).toString("base64")
 
@@ -51,7 +49,8 @@ var server = new Promise<nano.ServerScope>((resolve) => {
         requestDefaults: {
             timeout: 5000
         },
-        log: (requestBody, args) => console.debug(`[${id}][couchdb] ${JSON.stringify(requestBody)} ${args}`)
+        // Add for verbose logging:
+        // log: (requestBody, args) => console.debug(`[${id}][couchdb] ${JSON.stringify(requestBody)} ${args}`)
     }
 
     console.debug(`[${id}] connecting to couchdb`, couchConnectionOptions)
@@ -79,27 +78,26 @@ async function initializeDatabases() {
     return await Promise.all([initializeDatabase("monographs"), initializeDatabase("treatments")])
 }
 
-async function getDatabase(category: Category) {
-
+async function getDatabase<TDirectory = ExistingDirectory>(category: Category) {
     switch (category) {
         case "monographs":
             await databases.monographs
-            return (await server).db.use<Directory>("monographs");
+            return (await server).db.use<TDirectory>("monographs");
         case "treatments":
             await databases.treatments
-            return (await server).db.use<Directory>("treatments");
+            return (await server).db.use<TDirectory>("treatments");
             default:
                 throw new Error(`failed to get database for category '${category}'`)
     }
 }
 
-async function getEntry(directory: Directory) {
+async function getEntry(directory: ExistingDirectory) {
     var db = await getDatabase(directory.category)
 
-    return await db.attachment.getAsStream(getDirectoryIdentifier(directory), "entry")
+    return await db.attachment.get(directory._id, "content")
 }
 
-export async function getMetaContent(category: Category, query?: MangoQuery): Promise<Directory[]> {
+export async function getMetaContent(category: Category, query?: MangoQuery): Promise<ExistingDirectory[]> {
     const treatments = await getDatabase(category)
 
     if (!query) {
@@ -113,22 +111,36 @@ export async function getMetaContent(category: Category, query?: MangoQuery): Pr
     }
 }
 
-export async function getContent(category: Category, query: MangoQuery): Promise<Request[]> {
+export async function getContent(category: Category, query: MangoQuery): Promise<any[]> {
     const docs = await getMetaContent(category, query)
 
     return await Promise.all(docs.map(doc => getEntry(doc)))
 }
 
-export async function createOrUpdateMetaContent(directory: Directory): Promise<DocumentInsertResponse> {
+export async function createMetaContent(directory: Directory): Promise<DocumentInsertResponse> {
+    const db = await getDatabase<Directory>(directory.category)
+
+    return await db.insert(directory)
+}
+
+export async function updateMetaContent(directory: ExistingDirectory): Promise<DocumentInsertResponse> {
     const db = await getDatabase(directory.category)
 
     return await db.insert(directory)
 }
 
-export async function createOrUpdateContent(directory: Directory, content: Buffer | string, contentType: string): Promise<DocumentInsertResponse> {
+export async function addContent(directory: ExistingDirectory, content: Buffer | string, contentType: string): Promise<DocumentInsertResponse> {
     const db = await getDatabase(directory.category)
 
-    return await db.attachment.insert(getDirectoryIdentifier(directory), "content", content, contentType)
+    return await db.attachment.insert(directory._id, "content", content, contentType)
+}
+
+export async function createDirectoryAndContent(directory: Directory, content: Buffer | string, contentType: string) {
+    const db = await getDatabase(directory.category)
+
+    const response = await createMetaContent(directory)
+
+    return await db.attachment.insert(response.id, "content", content, contentType, { rev: response.rev })
 }
 
 export async function initialize() {
