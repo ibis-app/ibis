@@ -1,4 +1,4 @@
-import { Category, Directory, initialize, createOrUpdateMetaContent, createOrUpdateContent } from "./../db";
+import { Category, Directory, initialize, createDirectoryAndContent } from "./../db";
 import { HTMLElement, Node, parse } from "node-html-parser"
 import { existsSync, readFileSync, readdir } from "fs";
 import { getModality, modalities } from "@ibis-app/lib"
@@ -103,7 +103,6 @@ async function getAllListings(category: LegacyCategory): Promise<Entry[]> {
 
             return await Promise.all(withParsedContent.map((async content => ({
                 ...await parseAndTrim(content),
-                id: content.filename,
                 category: getCategoryFromLegacy(category),
                 modality: getModality(modality)
             }))))
@@ -136,9 +135,8 @@ export async function importLegacyEntries() {
 
         const imported = await importEntriesFromDisk()
 
-        await Promise.all(imported.map(async i => {
-            await createOrUpdateMetaContent(i)
-            await createOrUpdateContent(i, i.content, "text/html")
+        await Promise.all(imported.map(async ({ content, ...directory }) => {
+            await createDirectoryAndContent(directory, Buffer.from(content, "binary"), "text/html");
         }))
 
         console.debug("initialized")
@@ -146,3 +144,6 @@ export async function importLegacyEntries() {
         console.error(`unable to initialize: ${e}`)
     }
 }
+
+importLegacyEntries()
+    .then(() => console.log("Finished importing legacy entries from IBIS"));
