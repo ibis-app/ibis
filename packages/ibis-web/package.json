@@ -55,5 +55,12 @@
     "ext": "js json html css",
     "verbose": true,
     "ignore": ["gulpfile.js"]
+  },
+  "@pika/web": {
+    "webDependencies": [
+      "vue",
+      "vue-router",
+      "vue/dist/vue"
+    ]
   }
 }
