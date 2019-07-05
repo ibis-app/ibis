@@ -6,6 +6,7 @@
   "scripts": {
     "test": "ava",
     "start": "nodemon index.js",
+    "watch": "gulp watch",
     "build": "gulp build",
     "bundle": "gulp bundle",
     "bundle:deps": "@pika/pkg",
@@ -48,5 +49,11 @@
         "browser": true
       }
     ]
+  },
+  "nodemon": {
+    "script": "index.js",
+    "ext": "js json html css",
+    "verbose": true,
+    "ignore": ["gulpfile.js"]
   }
 }
