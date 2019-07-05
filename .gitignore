@@ -1,6 +1,7 @@
 IBIS-Mac*
 .vscode/settings.json
 node_modules/
+web_modules/
 dist/
 out/
 packages/ibis-app/semantic/dist/*
