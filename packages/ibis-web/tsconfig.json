@@ -4,7 +4,7 @@
         "baseUrl": "./src",
         "module": "es6",
         "paths": {
-            "/web_modules/*": [
+            "/web_modules/*.js": [
                 "../web_modules/*",
                 "../node_modules/*"
             ]
