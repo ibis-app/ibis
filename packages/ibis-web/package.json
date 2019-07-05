@@ -54,7 +54,9 @@
     "script": "index.js",
     "ext": "js json html css",
     "verbose": true,
-    "ignore": ["gulpfile.js"]
+    "ignore": [
+      "gulpfile.js"
+    ]
   },
   "@pika/web": {
     "webDependencies": [
