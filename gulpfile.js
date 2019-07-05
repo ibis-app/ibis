@@ -12,7 +12,7 @@ const json = require("rollup-plugin-json")
 const resolve = require("rollup-plugin-node-resolve")
 const babel = require("rollup-plugin-babel")
 
-function compress(scripts, out) {
+function compress(scripts, out, outputs) {
     const executor = () => gulp.src(scripts)
         .pipe(newer({
             dest: out,
@@ -31,11 +31,7 @@ function compress(scripts, out) {
                 }),
                 terser()
             ],
-        }, {
-                format: "cjs",
-                exports: "named",
-                browser: false
-            }))
+        }, outputs))
         .pipe(gulp.dest(out, { "base": "./" }))
     executor.displayName = `compressing sources in ${scripts} to ${out}`
     return executor
@@ -76,7 +72,12 @@ function project({
          * Copied as is to {@link dist} and {@link out}.
          * @type {string[]}
          */
-        vendor: vendor = null
+        vendor: vendor = null,
+        minifyOutputs: minifyOutputs = [{
+            format: "cjs",
+            exports: "named",
+            browser: false
+        }]
     }
 }) {
     /**
@@ -135,7 +136,9 @@ function project({
 
     const clean = gulp.parallel(cleanFolder(dist), cleanFolder(out))
 
-    const bundle = gulp.parallel(copyStaticSourcesToCompressed, compress(scripts, out))
+    const projectCompress = compress(scripts, out, minifyOutputs)
+
+    const bundle = gulp.parallel(copyStaticSourcesToCompressed, projectCompress)
 
     function package(done) {
         try {
@@ -179,7 +182,7 @@ function project({
         buildFast: gulp.parallel(copyStaticSourcesToDestination, localBuildFast),
         watch: watch,
         clean: clean,
-        compress: compress(scripts, out),
+        compress: projectCompress,
         bundle: bundle,
         package: gulp.series(bundle, package)
     }
