@@ -2,7 +2,6 @@ import { Header, Modality } from "@ibis-app/lib"
 import nano, { MangoQuery, DocumentInsertResponse, IdentifiedDocument, RevisionedDocument } from "nano"
 
 import { randomBytes } from "crypto";
-import { Request } from "request"
 import { couchInstanceUrl } from "./config";
 
 export type Category = "monographs" | "treatments"
@@ -41,7 +40,7 @@ export interface Database {
     treatments: Directory[]
 }
 
-var server = new Promise<nano.ServerScope>((resolve) => {
+var server = new Promise<nano.ServerScope>((resolve, reject) => {
     const id = randomBytes(10).toString("base64")
 
     const couchConnectionOptions: nano.Configuration = {
@@ -53,10 +52,14 @@ var server = new Promise<nano.ServerScope>((resolve) => {
         // log: (requestBody, args) => console.debug(`[${id}][couchdb] ${JSON.stringify(requestBody)} ${args}`)
     }
 
-    console.debug(`[${id}] connecting to couchdb`, couchConnectionOptions)
-    const serverScope = nano(couchConnectionOptions)
-    console.debug(`[${id}] successfully opened connection`, couchConnectionOptions)
-    resolve(serverScope)
+    try {
+        console.debug(`[${id}] connecting to couchdb`, couchConnectionOptions)
+        const serverScope = nano(couchConnectionOptions)
+        console.debug(`[${id}] successfully opened connection`, couchConnectionOptions)
+        resolve(serverScope)
+    } catch (e) {
+        reject(e)
+    }
 })
 
 const databases: { [key in Category]: Promise<void> } = {
@@ -75,7 +78,12 @@ async function initializeDatabase(dbName: Category) {
 }
 
 async function initializeDatabases() {
-    return await Promise.all([initializeDatabase("monographs"), initializeDatabase("treatments")])
+    try {
+        return await Promise.all([initializeDatabase("monographs"), initializeDatabase("treatments")])
+    } catch (e) {
+        console.error(e)
+        process.exit(1)
+    }
 }
 
 async function getDatabase<TDirectory = ExistingDirectory>(category: Category) {
