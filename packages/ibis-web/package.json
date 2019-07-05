@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava",
     "start": "nodemon index.js",
     "watch": "gulp watch",
     "build": "gulp build",
