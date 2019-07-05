@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "ava",
-    "start": "http-server out/public -d false --gzip true --no-dotfiles",
+    "start": "http-server out/public --gzip true --no-dotfiles",
     "build": "gulp build",
     "bundle": "gulp bundle",
     "clean": "gulp clean"
