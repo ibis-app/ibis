@@ -14,6 +14,10 @@ const babel = require("rollup-plugin-babel")
 
 function compress(scripts, out) {
     const executor = () => gulp.src(scripts)
+        .pipe(newer({
+            dest: out,
+            ext: ".js"
+        }))
         .pipe(debug({ title: "compressing" }))
         .pipe(rollup({
             plugins: [
