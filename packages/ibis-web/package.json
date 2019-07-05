@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "start": "http-server -p out/",
+    "build": "gulp build",
+    "bundle": "gulp bundle"
   },
   "repository": {
     "type": "git",
@@ -23,5 +26,6 @@
   },
   "devDependencies": {
     "@pika/web": "^0.4.3"
-  }
+  },
+  "paths": {}
 }
