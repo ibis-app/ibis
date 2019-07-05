@@ -30,7 +30,8 @@
   },
   "devDependencies": {
     "@types/pouchdb": "^6.3.3",
-    "fomantic-ui": "^2.7.5"
+    "fomantic-ui": "^2.7.5",
+    "nodemon": "^1.19.1"
   },
   "pkg": {
     "assets": [

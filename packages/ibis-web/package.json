@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "ava",
-    "start": "http-server out --gzip true --no-dotfiles",
+    "start": "nodemon index.js",
     "build": "gulp build",
     "bundle": "gulp bundle",
     "bundle:deps": "@pika/pkg",
@@ -27,7 +27,8 @@
     "vue-router": "^3.0.7"
   },
   "devDependencies": {
-    "@pika/web": "^0.4.3"
+    "@pika/web": "^0.4.3",
+    "nodemon": "^1.19.1"
   },
   "paths": {
     "scripts": [
@@ -39,6 +40,12 @@
     ],
     "static": [
       "src/**/*.{html,css}"
+    ],
+    "minifyOutputs": [
+      {
+        "format": "esm",
+        "browser": true
+      }
     ]
   }
 }

@@ -42,5 +42,8 @@
     "url": "https://github.com/ibis-app/ibis/issues"
   },
   "homepage": "https://github.com/ibis-app/ibis#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
 }
