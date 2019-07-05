@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "ava",
-    "start": "http-server out/public --gzip true --no-dotfiles",
+    "start": "http-server out --gzip true --no-dotfiles",
     "build": "gulp build",
     "bundle": "gulp bundle",
+    "bundle:deps": "@pika/pkg",
     "clean": "gulp clean"
   },
   "repository": {
@@ -29,8 +30,15 @@
     "@pika/web": "^0.4.3"
   },
   "paths": {
+    "scripts": [
+      "dist/**/*.js",
+      "!dist/web_modules/**/*.js"
+    ],
+    "vendor": [
+      "web_modules/**/*"
+    ],
     "static": [
-      "src/public/**"
+      "src/**/*.{html,css}"
     ]
   }
 }
