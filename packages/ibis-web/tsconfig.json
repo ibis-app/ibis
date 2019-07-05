@@ -1,3 +1,13 @@
 {
-    "extends": "../../tsconfig.json"
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "module": "es6",
+        "paths": {
+            "/web_modules/*": [
+                "../web_modules/*",
+                "../node_modules/*"
+            ]
+        }
+    }
 }
