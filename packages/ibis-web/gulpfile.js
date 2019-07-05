@@ -8,18 +8,34 @@ const { build, buildFast, clean, compress, bundle, watch } = project(package)
 
 function watchStaticFiles(cb) {
     var monitor = nodemon(package.nodemon)
-        .on('start', () => {
-            console.log('started watching')
+        .on('restart', () => {
+            console.debug('nodemon is restarting')
         })
-        .on('error', () => process.exit(1))
-        .on('exit', () => {
-            cb();
-            process.exit(0)
+        .on('start', () => {
+            console.log('nodemon has started watching')
+        })
+        .on('error', (e) =>{
+            console.error('nodemon has recieved unexpected error')
+            console.error(e)
+            process.exit(1)
+        })
+        .on('exit', (signal) => {
+            switch (signal) {
+                case "SIGUSR2":
+                    monitor.emit('restart');
+                    break;
+                default:
+                    console.log('exiting due to unexpected signal', signal)
+                    cb();
+                    process.exit(0)
+            }
         })
 
-    process.on('SIGABRT', () => monitor.emit('exit'))
-    process.on('SIGTERM', () => monitor.emit('exit'))
-    process.on('uncaughtException', () => monitor.emit('exit'))
+    process.on('SIGUSR1', () => monitor.emit('restart'))
+    process.on('SIGUSR2', () => monitor.emit('restart'))
+    process.on('SIGABRT', () => monitor.emit('exit', 'abort'))
+    process.on('SIGTERM', () => monitor.emit('exit', 'term'))
+    process.on('uncaughtException', () => monitor.emit('exit', 'uncaught'))
 }
 
 exports.build = build;
