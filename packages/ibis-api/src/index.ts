@@ -14,4 +14,8 @@ export const start = () => {
                 process.send && process.send("initialized")
             })
         })
+        .catch((e) => {
+            console.error(e)
+            process.exit(1)
+        })
 }

@@ -10,3 +10,7 @@ export const start = () => h2(app)
                         process.send && process.send("initialized")
                 })
         })
+        .catch((e) => {
+                console.error(e)
+                process.exit(1)
+        })
