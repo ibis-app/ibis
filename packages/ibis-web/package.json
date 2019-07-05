@@ -9,7 +9,7 @@
     "watch": "gulp watch",
     "build": "gulp build",
     "bundle": "gulp bundle",
-    "bundle:deps": "@pika/pkg",
+    "bundle:deps": "npx @pika/web",
     "clean": "gulp clean"
   },
   "repository": {
@@ -60,7 +60,7 @@
     "webDependencies": [
       "vue",
       "vue-router",
-      "vue/dist/vue"
+      "vue/dist/vue.js"
     ]
   }
 }
