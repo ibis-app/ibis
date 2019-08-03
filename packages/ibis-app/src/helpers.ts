@@ -1,10 +1,10 @@
-import { apiHostname } from "@ibis-app/api"
+import { apiHostname, paths } from "./config"
+
 import exhbs from "express-hbs"
 import got from "got"
+import { join } from "path"
 import { menuItems } from "./views"
 import { modalities } from "@ibis-app/lib"
-import { paths } from "./config"
-import { join } from "path"
 
 exhbs.cwd = paths.root
 
@@ -14,9 +14,9 @@ const menuLayoutPath = join(paths.views, "partials/menu")
 
 export const fetchFromAPI = (endpoint: string) => {
     const absolutePath = `${apiHostname}/${endpoint}`
-    console.log('fetching from api:', absolutePath)
+    console.log("fetching from api:", absolutePath)
     return got(absolutePath, {
-        method: 'GET',
+        method: "GET",
         json: true
     })
     .then(response => response.body)

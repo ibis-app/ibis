@@ -1,18 +1,11 @@
+import { SearchDirectory, formatSearchDirectory, directoryFilter } from "./search";
+import { getCategoryFromRequestString, getContent, getMetaContent } from "./db"
+
 import { default as express } from "express"
-import { Modality, getModality } from "@ibis-app/lib";
-import { Directory, Entry, getMetaContent, getCategoryFromRequestString, getContent } from "./db"
+import { getModality } from "@ibis-app/lib";
 import isEmpty from "lodash/isEmpty"
-import { formatSearchDirectory, SearchDirectory } from "./search";
 
 const router = express.Router()
-
-function shouldIncludeDirectory(modality: Modality, directory: Directory): boolean {
-    return directory.modality.code === modality.code
-}
-
-function shouldIncludeEntry(modality: Modality, id: string, entry: Entry): boolean {
-    return shouldIncludeDirectory(modality, entry) && id === entry.id
-}
 
 /**
  * Mostly used for debug purposes. What purposes?
@@ -30,11 +23,7 @@ async function handleRequest(options: {
     category: string,
     modality: string,
     id?: string
-}): Promise<Entry | {
-    modality: Modality
-    empty: boolean,
-    meta: SearchDirectory[]
-}> {
+}) {
     if (!options.category || !options.modality) {
         throw new Error("missing category or modality")
     }
@@ -48,11 +37,18 @@ async function handleRequest(options: {
     }
 
     if (options.id) {
-        const entries = await getContent(matchedCategory, (e) => shouldIncludeEntry(matchedModality, options.id, e))
+        const selector = {
+            modality: { code: matchedModality.code }, _id: options.id
+        }
+        const directories = await getMetaContent(matchedCategory, { selector: selector })
+        const contentEntries = await getContent(matchedCategory, { selector: selector })
 
-        return entries[0]
+        return {
+            ...directories[0],
+            content: contentEntries[0]
+        }
     } else {
-        const entries = await getMetaContent(matchedCategory, (d: Directory) => shouldIncludeDirectory(matchedModality, d))
+        const entries = await getMetaContent(matchedCategory, { selector: { modality: { code: matchedModality.code }, } })
 
         const meta = entries.map(formatSearchDirectory)
 
@@ -69,10 +65,15 @@ router.get("/", (req, res) => {
     res.send()
 })
 
-router.get('/:category/:modality/:id?', (req, res, next) => {
+router.get("/:category/:modality/:id?", (req, res) => {
     return handleRequest(req.params)
-        .then(response => res.send(response))
-        .catch(() => res.sendStatus(404))
+        .then(response => {
+            res.send(response)
+        })
+        .catch((e) => {
+            console.error(e)
+            res.sendStatus(404)
+        })
 })
 
 export {

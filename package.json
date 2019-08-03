@@ -11,7 +11,8 @@
     "test": "lerna run --stream test --parallel",
     "e2e": "lerna run --stream e2e",
     "pkg": "lerna run --stream pkg",
-    "lint": "lerna run --stream lint --parallel",
+    "lint": "lerna run --stream lint --parallel --no-bail --no-prefix",
+    "lint:fix": "lerna run --stream lint:fix --parallel --no-bail --no-prefix",
     "watch": "lerna run --stream watch --parallel",
     "clean": "lerna run --stream clean --parallel"
   },
@@ -38,7 +39,6 @@
     "@types/jquery": "^3.3.29",
     "@types/js-beautify": "^1.8.0",
     "@types/lodash": "^4.14.121",
-    "@types/lowdb": "^1.0.6",
     "@types/node-fetch": "^2.3.3",
     "@types/pify": "^3.0.2",
     "@types/shelljs": "^0.8.2",

@@ -1,9 +1,9 @@
 import { Header, Modality } from "@ibis-app/lib"
-import { join } from "path"
-import { importEntriesFromDisk } from "./legacy-import"
+import nano, { MangoQuery, DocumentInsertResponse, IdentifiedDocument, RevisionedDocument } from "nano"
 
-import BetterFileAsync from "./BetterFileAsync"
-import lowdb from "lowdb"
+import { randomBytes } from "crypto";
+import { Request } from "request"
+import { couchInstanceUrl } from "./config";
 
 export type Category = "monographs" | "treatments"
 
@@ -21,14 +21,13 @@ export function getCategoryFromRequestString(category: string): Category {
 }
 
 export interface Directory {
-    id: string,
     category: Category,
     modality: Modality,
     header: Header
 }
 
-export interface Entry extends Directory {
-    content: string
+export interface ExistingDirectory extends Directory, IdentifiedDocument, RevisionedDocument {
+
 }
 
 export interface Database {
@@ -39,75 +38,111 @@ export interface Database {
     /**
      * The treatments for specific diseases, using components from a modality.
      */
-    treatments: Directory[],
-    content: {
-        monographs: Entry[],
-        treatments: Entry[]
+    treatments: Directory[]
+}
+
+var server = new Promise<nano.ServerScope>((resolve) => {
+    const id = randomBytes(10).toString("base64")
+
+    const couchConnectionOptions: nano.Configuration = {
+        url: couchInstanceUrl,
+        requestDefaults: {
+            timeout: 5000
+        },
+        // Add for verbose logging:
+        // log: (requestBody, args) => console.debug(`[${id}][couchdb] ${JSON.stringify(requestBody)} ${args}`)
     }
-}
 
-export function getDirectoryIdentifier(directory: { category: Category, modality: Modality, id: string }): string {
-    return `/${directory.category}/${directory.modality.code}/${directory.id}`
-}
-
-const adapter = new BetterFileAsync<Database>(join(process.cwd(), "db.json"), {
-    defaultValue: {
-        monographs: [],
-        treatments: [],
-        content: {
-            monographs: [],
-            treatments: []
-        }
-    },
+    console.debug(`[${id}] connecting to couchdb`, couchConnectionOptions)
+    const serverScope = nano(couchConnectionOptions)
+    console.debug(`[${id}] successfully opened connection`, couchConnectionOptions)
+    resolve(serverScope)
 })
 
-function database(): Promise<lowdb.LowdbAsync<Database>> {
-    return lowdb(adapter)
-}
+const databases: { [key in Category]: Promise<void> } = {
+    "monographs": initializeDatabase("monographs"),
+    "treatments": initializeDatabase("treatments")
+};
 
-export async function getMetaContent(category: Category, query?: (d: Directory) => boolean): Promise<Directory[]> {
-    const db = await database()
+async function initializeDatabase(dbName: Category) {
+    const s = await server
 
-    const treatments = db.get(category)
-
-    if (!query) {
-        return treatments.value();
-    } else {
-        return treatments.filter(query).value();
+    try {
+        await s.db.get(dbName)
+    } catch {
+        await s.db.create(dbName)
     }
 }
 
-export async function getContent(category: Category, query?: (e: Entry) => boolean): Promise<Entry[]> {
-    const db = await database()
+async function initializeDatabases() {
+    return await Promise.all([initializeDatabase("monographs"), initializeDatabase("treatments")])
+}
 
-    const treatments = db.get("content").get(category)
+async function getDatabase<TDirectory = ExistingDirectory>(category: Category) {
+    switch (category) {
+        case "monographs":
+            await databases.monographs
+            return (await server).db.use<TDirectory>("monographs");
+        case "treatments":
+            await databases.treatments
+            return (await server).db.use<TDirectory>("treatments");
+            default:
+                throw new Error(`failed to get database for category '${category}'`)
+    }
+}
+
+async function getEntry(directory: ExistingDirectory) {
+    var db = await getDatabase(directory.category)
+
+    return await db.attachment.get(directory._id, "content")
+}
+
+export async function getMetaContent(category: Category, query?: MangoQuery): Promise<ExistingDirectory[]> {
+    const treatments = await getDatabase(category)
 
     if (!query) {
-        return treatments.value();
+        // TODO: listAsStream?
+        // https://www.npmjs.com/package/nano#nanodblistasstream
+        var allDocumentResponse = await treatments.list({ include_docs: true })
+        return allDocumentResponse.rows.map(r => r.doc)
     } else {
-        return treatments.filter(query).value();
+        var response = await treatments.find(query)
+        return response.docs
     }
+}
+
+export async function getContent(category: Category, query: MangoQuery): Promise<any[]> {
+    const docs = await getMetaContent(category, query)
+
+    return await Promise.all(docs.map(doc => getEntry(doc)))
+}
+
+export async function createMetaContent(directory: Directory): Promise<DocumentInsertResponse> {
+    const db = await getDatabase<Directory>(directory.category)
+
+    return await db.insert(directory)
+}
+
+export async function updateMetaContent(directory: ExistingDirectory): Promise<DocumentInsertResponse> {
+    const db = await getDatabase(directory.category)
+
+    return await db.insert(directory)
+}
+
+export async function addContent(directory: ExistingDirectory, content: Buffer | string, contentType: string): Promise<DocumentInsertResponse> {
+    const db = await getDatabase(directory.category)
+
+    return await db.attachment.insert(directory._id, "content", content, contentType)
+}
+
+export async function createDirectoryAndContent(directory: Directory, content: Buffer | string, contentType: string) {
+    const db = await getDatabase(directory.category)
+
+    const response = await createMetaContent(directory)
+
+    return await db.attachment.insert(response.id, "content", content, contentType, { rev: response.rev })
 }
 
 export async function initialize() {
-    const db = await database()
-
-    console.debug("initializing...")
-
-    if (db.get("treatments").value().length !== 0) {
-        console.debug("initialized (cached)")
-        return
-    }
-
-    try {
-        console.debug(`fetching all listings from legacy IBIS directory`)
-
-        const imported = await importEntriesFromDisk()
-
-        await db.setState(imported).write()
-
-        console.debug("initialized")
-    } catch (e) {
-        console.error(`unable to initialize: ${e}`)
-    }
+    await initializeDatabases()
 }

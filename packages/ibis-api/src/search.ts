@@ -1,9 +1,15 @@
-import { getModality } from "@ibis-app/lib"
+import {
+    Category,
+    Directory,
+    ExistingDirectory,
+    getCategoryFromRequestString,
+    getMetaContent
+} from "./db";
+import { Router, default as express } from "express";
 
-import { default as express, Router } from "express"
-import fuse from "fuse.js"
+import fuse from "fuse.js";
+import { getModality } from "@ibis-app/lib";
 
-import { getMetaContent, Directory, getDirectoryIdentifier, getCategoryFromRequestString, Category } from "./db"
 import flatten = require("lodash/flatten");
 
 const router: Router = express.Router()
@@ -44,10 +50,10 @@ export interface SearchDirectory extends Directory {
     url: string
 }
 
-export function formatSearchDirectory(directory: Directory): SearchDirectory {
+export function formatSearchDirectory(directory: ExistingDirectory): SearchDirectory {
     return {
         ...directory,
-        url: getDirectoryIdentifier(directory)
+        url: `${directory.modality.code}/${directory._id}`
     }
 }
 
@@ -155,7 +161,7 @@ function searchOptions<DataType>(options?: SearchOptions<DataType>): (q: string,
 
         const search = new fuse(data, { ...defaultFuseOptions, ...options})
 
-        console.log('searching', data.length, 'entries on', `'${q}'`)
+        console.log("searching", data.length, "entries on", `'${q}'`)
 
         return search.search(q)
     }
@@ -177,7 +183,7 @@ export function query(text: string): Query {
         const matchedModality = match[1]
 
         result.modality = matchedModality.replace(/[""]/g, "")
-        result.text = result.text.replace(modalityPattern, '').trim()
+        result.text = result.text.replace(modalityPattern, "").trim()
     }
 
     return result

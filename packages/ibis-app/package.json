@@ -11,13 +11,13 @@
     "e2e": "ava --tap --serial e2e/index.test.js e2e/pkg.test.js",
     "pkg": "gulp package",
     "lint": "tslint --project . -t verbose",
+    "lint:fix": "tslint --project . -t verbose --fix",
     "watch": "gulp watch",
     "clean": "gulp clean"
   },
   "author": "Ben Spriggs",
   "license": "ISC",
   "dependencies": {
-    "@ibis-app/api": "^0.1.2",
     "@ibis-app/lib": "^0.1.2",
     "cors": "^2.8.5",
     "express": "^4.16.4",
@@ -25,9 +25,11 @@
     "got": "^9.6.0",
     "handlebars": "^4.1.2",
     "jquery": "^3.4.1",
-    "node-html-parser": "^1.1.15"
+    "node-html-parser": "^1.1.15",
+    "pouchdb": "^7.1.1"
   },
   "devDependencies": {
+    "@types/pouchdb": "^6.3.3",
     "fomantic-ui": "^2.7.5"
   },
   "pkg": {

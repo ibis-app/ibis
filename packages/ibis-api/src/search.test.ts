@@ -1,8 +1,8 @@
-import { router as search, SearchResult, query, directoryFilter } from "./search"
-import { getModality } from "@ibis-app/lib"
+import { SearchResult, directoryFilter, query, router as search } from "./search"
 
 import bodyparser from "body-parser"
 import express from "express"
+import { getModality } from "@ibis-app/lib"
 import request from "supertest"
 import test from "ava"
 
@@ -125,38 +125,36 @@ test("search:query:modality", (t) => {
 
 test("search:directoryFilter:modality:false", (t) => {
     var f = directoryFilter({
-        text: 'anything',
-        modality: 'bota'
+        text: "anything",
+        modality: "bota"
     })
 
     t.is(false, f({
-        id: '',
         category: "treatments",
-        modality: getModality('home'),
+        modality: getModality("home"),
         header: {
-            version: '',
-            tag: '',
-            name: '',
-            category: ''
+            version: "",
+            tag: "",
+            name: "",
+            category: ""
         }
     }))
 })
 
 test("search:directoryFilter:modality:true", (t) => {
     var f = directoryFilter({
-        text: 'anything',
-        modality: 'bota'
+        text: "anything",
+        modality: "bota"
     })
 
     t.is(true, f({
-        id: '',
         category: "treatments",
-        modality: getModality('bota'),
+        modality: getModality("bota"),
         header: {
-            version: '',
-            tag: '',
-            name: '',
-            category: ''
+            version: "",
+            tag: "",
+            name: "",
+            category: ""
         }
     }))
 })

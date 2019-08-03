@@ -32,7 +32,7 @@ function compress(scripts, out) {
                 exports: "named",
                 browser: false
             }))
-        .pipe(gulp.dest(out))
+        .pipe(gulp.dest(out, { "base": "./" }))
     executor.displayName = `compressing sources in ${scripts} to ${out}`
     return executor
 }
@@ -53,7 +53,7 @@ function build(project, dist) {
         .pipe(project())
         .pipe(sourcemaps.write('.', { sourceRoot: "./", includeContent: false }))
         .pipe(debug({ title: `compiled typescript source (${project.configFileName})` }))
-        .pipe(gulp.dest(dist))
+        .pipe(gulp.dest(dist, { "base": "./" }))
 }
 
 function project({
@@ -96,7 +96,7 @@ function project({
                     return gulp.src(a, { base: base })
                         .pipe(changed(destination))
                         .pipe(debug({ title: `${title} -> ${destination}` }))
-                        .pipe(gulp.dest(destination))
+                        .pipe(gulp.dest(destination, { "base": "./" }))
                 }
             }
 

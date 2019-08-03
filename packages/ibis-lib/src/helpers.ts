@@ -1,6 +1,7 @@
-import { spawn, ChildProcess } from "child_process";
-import { randomBytes } from "crypto";
+import { ChildProcess, spawn } from "child_process";
+
 import { Socket } from "net"
+import { randomBytes } from "crypto";
 
 export interface Options {
     command: string,
@@ -41,9 +42,9 @@ function isOpenPort({ host, port, timeout = 5000 }: { host: string, port: number
     socket.setTimeout(timeout)
 
     return new Promise<boolean>((resolve, reject) => {
-        socket.once('error', handleSocketErrorCodes(resolve, reject))
+        socket.once("error", handleSocketErrorCodes(resolve, reject))
 
-        socket.once('timeout', () => {
+        socket.once("timeout", () => {
             socket.destroy()
             resolve(true)
         })
@@ -94,18 +95,18 @@ function spawnProcessOnInitializationMessage(options: Options, log: (...args: an
 
         const appUnderTest = spawn(options.command, options.args, {
             env: { ...process.env, [options.host_env]: host, [options.port_env]: port.toString() },
-            stdio: ['pipe', 'pipe', 'pipe', 'ipc']
+            stdio: ["pipe", "pipe", "pipe", "ipc"]
         });
 
         setTimeout(() => reject(`setup for '${options.prefix}' timed out (took more than ${adjustedTimeout} ms to send initialization message)`), adjustedTimeout);
 
-        appUnderTest.on('message', (...args: any[]) => {
+        appUnderTest.on("message", (...args: any[]) => {
             log(`recieved message, assuming that app has initialized: ${JSON.stringify(args)}\n`);
             resolve({ app: appUnderTest, port: port });
         });
-        appUnderTest.stdout.on('data', logMessage(log));
-        appUnderTest.stderr.on('data', logMessage(log));
-        appUnderTest.on('exit', (code, signal) => {
+        appUnderTest.stdout.on("data", logMessage(log));
+        appUnderTest.stderr.on("data", logMessage(log));
+        appUnderTest.on("exit", (code, signal) => {
             reject(`setup for ${options.prefix} unexpectedly closed with exit code ${code}`);
         });
     });
@@ -121,11 +122,11 @@ export function withEntrypoint(options: Options) {
     } = options;
 
     return function helper(t: any, run: any) {
-        const id = randomBytes(10).toString('base64')
+        const id = randomBytes(10).toString("base64")
 
-        const log = (...args: any[]) => process.stdout.write([`[${id}]`].concat(args).join(' '))
+        const log = (...args: any[]) => process.stdout.write([`[${id}]`].concat(args).join(" "))
 
-        log(`starting e2e test for ${prefix} - '${t.title}'`, JSON.stringify(options), '\n')
+        log(`starting e2e test for ${prefix} - '${t.title}'`, JSON.stringify(options), "\n")
 
         return spawnProcessOnInitializationMessage(options, log)
             .then(async ({ app, port }) => {

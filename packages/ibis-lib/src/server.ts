@@ -1,9 +1,10 @@
-import spdy from "spdy"
+import { IncomingMessage, ServerResponse } from "http"
+
 import http from "http"
 import pem from "pem"
-import { IncomingMessage, ServerResponse } from "http"
 import program from "commander"
 import { readFileSync } from "fs"
+import spdy from "spdy"
 
 export interface ServerOptions {
     key?: string,
@@ -59,13 +60,13 @@ export const h2 = async (app: (request: IncomingMessage, response: ServerRespons
     const options = await parseServerOptions()
 
     if (options.key && options.cert) {
-        console.log('setting up https')
+        console.log("setting up https")
         return createServer(app, {
             key: readFileSync(options.key),
             cert: readFileSync(options.cert)
         })
     } else {
-        console.log('setting up http')
+        console.log("setting up http")
         return Promise.resolve(http.createServer(app));
     }
 }

@@ -1,16 +1,20 @@
+import { Category, Directory, initialize, createDirectoryAndContent } from "./../db";
 import { HTMLElement, Node, parse } from "node-html-parser"
+import { existsSync, readFileSync, readdir } from "fs";
+import { getModality, modalities } from "@ibis-app/lib"
+import { parseHeader, trimConsecutive, trimLeft } from "./utils"
+
 import { config } from "./../config"
-import { readdir, readFileSync, existsSync } from "fs";
-import { join } from "path";
-import { trimConsecutive, trimLeft, parseHeader } from "./utils"
-
-import { modalities, getModality } from "@ibis-app/lib"
-
 import isEmpty from "lodash/isEmpty"
-import { Database, Directory, Entry, Category } from "./../db";
+import { join } from "path";
+
 import flatten = require("lodash/flatten");
 
 type LegacyCategory = "rx" | "tx"
+
+interface Entry extends Directory {
+    content: string;
+}
 
 function getCategoryFromLegacy(cat: LegacyCategory): Category {
     if (cat === "tx") {
@@ -23,7 +27,7 @@ function getCategoryFromLegacy(cat: LegacyCategory): Category {
 }
 
 async function getDeserialized(absoluteFilePath: string) {
-    const content = readFileSync(absoluteFilePath, { encoding: 'utf-8' })
+    const content = readFileSync(absoluteFilePath, { encoding: "utf-8" })
 
     const parsed = parse(content.toString(), { noFix: false, lowerCaseTagName: false })
 
@@ -99,35 +103,47 @@ async function getAllListings(category: LegacyCategory): Promise<Entry[]> {
 
             return await Promise.all(withParsedContent.map((async content => ({
                 ...await parseAndTrim(content),
-                id: content.filename,
                 category: getCategoryFromLegacy(category),
                 modality: getModality(modality)
             }))))
         })))
 }
 
-export async function importEntriesFromDisk(): Promise<Database> {
+export async function importEntriesFromDisk(): Promise<Entry[]> {
     console.debug(`fetching all listings from legacy IBIS directory: '${config.relative.ibisRoot(".")}'`)
 
-    if (!existsSync(config.relative.ibisRoot('.'))) {
+    if (!existsSync(config.relative.ibisRoot("."))) {
         console.error("no IBIS directory detected, skipping initialization")
     }
 
-    function stripContent(entry: Entry): Directory {
-        const { content, ...directory } = entry
+    return flatten(await Promise.all([getAllListings("tx"), getAllListings("rx")]))
+}
 
-        return directory;
+async function doesCouchDbInstanceContainLegacyEntries(): Promise<boolean> {
+    return false;
+}
+
+export async function importLegacyEntries() {
+    await initialize()
+
+    if (await doesCouchDbInstanceContainLegacyEntries()) {
+        return
     }
 
-    const diseases = getAllListings("tx")
-    const monographs = getAllListings("rx")
+    try {
+        console.debug(`fetching all listings from legacy IBIS directory`)
 
-    return {
-        "monographs": (await monographs).map(stripContent),
-        "treatments": (await diseases).map(stripContent),
-        "content": {
-            "monographs": await monographs,
-            "treatments": await diseases
-        }
+        const imported = await importEntriesFromDisk()
+
+        await Promise.all(imported.map(async ({ content, ...directory }) => {
+            await createDirectoryAndContent(directory, Buffer.from(content, "binary"), "text/html");
+        }))
+
+        console.debug("initialized")
+    } catch (e) {
+        console.error(`unable to initialize: ${e}`)
     }
 }
+
+importLegacyEntries()
+    .then(() => console.log("Finished importing legacy entries from IBIS"));

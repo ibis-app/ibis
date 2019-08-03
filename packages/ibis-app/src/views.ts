@@ -1,13 +1,14 @@
-import { exhbs } from "./helpers"
-import { default as express, Application } from "express"
+import { Application, default as express } from "express"
+
 import { Options } from "express-hbs"
-import { fetchFromAPI } from "./helpers"
-import { requestLogger } from "@ibis-app/lib"
 import { default as cors } from "cors"
-import { router as assets } from "./assets"
+import { exhbs } from "./helpers"
+import { fetchFromAPI } from "./helpers"
+import { getModality } from "@ibis-app/lib";
 import { join } from "path"
 import { paths } from "./config"
-import { getModality } from "@ibis-app/lib";
+import { requestLogger } from "@ibis-app/lib"
+import { router as assets } from "./assets"
 
 const app: Application = express()
 

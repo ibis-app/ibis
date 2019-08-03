@@ -10,9 +10,9 @@
         ]
     },
     "rules": {
+        "no-implicit-dependencies": true,
         "semi": false,
         "no-constant-condition": true,
-        "sort-imports": true,
         "eofline": true,
         "quotemark": [
             true,
