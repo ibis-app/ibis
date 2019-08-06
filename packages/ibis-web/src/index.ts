@@ -1,10 +1,10 @@
 // TODO: use vue, vue-router, pouchdb to wire together a working app
 import Vue from "/web_modules/vue.js"
-import HelloWorld from "./components/hello-world/index"
-
-Vue.component("hello-world", HelloWorld)
+import router from "./router/index"
+import App from "./app"
 
 var myApp = new Vue({
     el: "#app",
-    render: (h) => h(HelloWorld)
-});
+    render: (h) => h(App),
+    router
+})
