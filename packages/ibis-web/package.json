@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@pika/web": "^0.4.3",
+    "@types/pouchdb": "^6.4.0",
     "http-server": "^0.11.1",
     "nodemon": "^1.19.1"
   },
@@ -35,7 +36,8 @@
       "!dist/web_modules/**/*.js"
     ],
     "vendor": [
-      "web_modules/**/*"
+      "web_modules/**/*",
+      "node_modules/pouchdb/dist/*"
     ],
     "static": [
       "src/**/*.{html,css}"
