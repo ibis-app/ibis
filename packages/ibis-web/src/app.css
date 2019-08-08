@@ -1,0 +1,27 @@
+body {
+    font-size: 1em;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    min-height: 80vh;
+}
+
+nav {
+    width: 100%;
+    background: greenyellow;
+    display: flex;
+    flex-direction: row;
+    font-size: 1.13em;
+}
+
+nav > a {
+    text-decoration: none;
+    padding: 1.35em;
+}
+
+nav > a:hover {
+    background: whitesmoke;
+}

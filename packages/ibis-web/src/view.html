@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>IBIS | Search</title>
+    <title>IBIS | View</title>
     <meta name="description" content="A wonderful app!">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/app.css">
@@ -24,19 +24,19 @@
         <a href="/search">Search</a>
     </nav>
     <main>
-        Here's a generalized search page.
+        This is where we can see the legit thing.
 
-        <form action="/results" method="GET" autocomplete="on">
-            <label for="query">Search something</label>
-            <input name="query" type="text" autocomplete="on" autofocus />
-            <input type="submit" />
-        </form>
+        <section id="frame">
+            <progress id="frame-loading"></progress>
+        </section>
     </main>
     <footer>
         Here's a footer
     </footer>
 
     <script src="/index.js" async defer></script>
+    <script src="/node_modules/pouchdb/dist/pouchdb.js" async defer></script>
+    <script src="/scripts/view.js" async defer></script>
 </body>
 
 </html>
