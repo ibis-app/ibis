@@ -32,11 +32,9 @@
   },
   "paths": {
     "scripts": [
-      "dist/**/*.js",
-      "!dist/web_modules/**/*.js"
+      "dist/**/*.js"
     ],
     "vendor": [
-      "web_modules/**/*",
       "node_modules/pouchdb/dist/*"
     ],
     "static": [

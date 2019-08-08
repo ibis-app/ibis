@@ -26,17 +26,23 @@
     <main>
         Here's a generalized search page.
 
-        <form action="/results" method="GET" autocomplete="on">
-            <label for="query">Search something</label>
-            <input name="query" type="text" autocomplete="on" autofocus />
+        <form action="/search" method="GET" autocomplete="on">
+            <fieldset>
+                <label for="query">Text</label>
+                <input name="query" type="text" autocomplete="on" autofocus />
+            </fieldset>
             <input type="submit" />
         </form>
+
+        <section id="results">
+            Here's where results go.
+        </section>
     </main>
     <footer>
         Here's a footer
     </footer>
 
-    <script src="/index.js" async defer></script>
+    <script src="/scripts/search.js" type="module" async defer></script>
 </body>
 
 </html>

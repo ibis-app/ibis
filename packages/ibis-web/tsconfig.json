@@ -1,12 +1,16 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "baseUrl": "./src",
+        "baseUrl": ".",
+        "rootDir": "./src",
         "module": "es6",
         "paths": {
             "/node_modules/*.js": [
                 "../node_modules/*"
             ]
         }
-    }
+    },
+    "include": [
+        "./src/**/*.ts"
+    ]
 }

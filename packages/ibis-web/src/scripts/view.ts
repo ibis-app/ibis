@@ -1,12 +1,9 @@
+import "/node_modules/pouchdb/dist/pouchdb"
+import { empty } from "./utils"
+
 interface ILoadOptions {
     name: string,
     id: string
-}
-
-function empty(parent: HTMLElement) {
-    while (parent.firstChild) {
-        parent.removeChild(parent.firstChild)
-    }
 }
 
 /**
@@ -65,14 +62,27 @@ async function mountTheThing(fragment: DocumentFragment) {
     frame.appendChild(fragment);
 }
 
+async function removeLoadingIndicator() {
+    const progressIndicator = document.getElementById("frame-loading")
+
+    progressIndicator.parentNode.removeChild(progressIndicator)
+}
+
 function displayResult() {
+    if (!window.location.search || window.location.search === "") {
+        return
+    }
+
+    const urlSearchParams = new URLSearchParams(window.location.search.slice(1))
+
     loadTheThing({
-        name: "monographs",
-        id: "aebf1dc868df66dca116854023442fb4"
+        name: urlSearchParams.get("category"),
+        id: urlSearchParams.get("id")
     })
         .then(parseAndSanitizeTheThing)
         .then(mountTheThing)
         .catch(console.error)
+        .finally(removeLoadingIndicator)
 }
 
 window.onload = displayResult;

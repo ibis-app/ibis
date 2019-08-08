@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Web version of IBIS (MedicineWorks)",
   "scripts": {
-    "start": "lerna run --stream start --parallel",
+    "start": "lerna run --stream start --parallel --ignore */app",
     "build": "lerna run --stream build",
     "build:semantic": "lerna run --stream build:semantic",
     "build:fast": "lerna run --stream build:fast",
@@ -13,7 +13,7 @@
     "pkg": "lerna run --stream pkg",
     "lint": "lerna run --stream lint --parallel --no-bail --no-prefix",
     "lint:fix": "lerna run --stream lint:fix --parallel --no-bail --no-prefix",
-    "watch": "lerna run --stream watch --parallel",
+    "watch": "lerna run --stream watch --parallel --ignore */app",
     "clean": "lerna run --stream clean --parallel"
   },
   "repository": {
